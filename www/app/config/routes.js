@@ -12,7 +12,7 @@ app.config(function ($stateProvider, $urlRouterProvider) {
 		})
 		.state('dashboard', {
 			url: '/dashboard',
-			tempalteUrl: 'app/components/dashboard/dashboard.html'
+			templateUrl: 'app/components/dashboard/dashboard.html'
 		})
 		.state('classroom', {
 			url: '/classroom', // Pull uid from URL

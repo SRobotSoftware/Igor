@@ -1,14 +1,15 @@
-<div class="row">
+<div class="container">
 
-  <div class="col col-offset-33 col-33">
-    <div class="h2">Please Log In:</div>
-    <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et hic veritatis ipsam qui a dicta exercitationem, debitis fugiat sint iusto.</div>
-    <div>Odit iure non accusantium, error beatae quas facere deleniti consequuntur nam id cupiditate, dignissimos, quasi aliquid quia, ad sequi totam.</div>
-    <div>Esse optio doloremque harum facere impedit quae dolorem, ut, saepe porro corporis, placeat atque distinctio sint numquam. Sunt, consequatur illum!</div>
-  </div>
-
-  <div class="col">
-    <button class="button button-stable" ui-sref="dashboard">Go to Dash</button>
-  </div>
+	<div>
+		<div class="h2">Please Log In:</div>
+		<form>
+			<label for="email">Email: </label>
+			<input type="email" placeholder="bob@bob.com">
+			<label for="password">Password: </label>
+			<input type="password" placeholder="*******">
+			<button class="button button-stable" ui-sref="dashboard">Login</button>
+			<button class="button button-stable" ui-sref="register">Register</button>
+		</form>
+	</div>
 
 </div>
