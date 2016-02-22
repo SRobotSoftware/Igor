@@ -6,7 +6,7 @@
 var app = angular.module('starter', ['ionic', 'ui.router', 'js-data'])
 
 app.config(function (DSFirebaseAdapterProvider) {
-	DSFirebaseAdapterProvider.defaults.basePath = 'https://discoApp.firebase.com';
+	DSFirebaseAdapterProvider.defaults.basePath = 'https://discoapp.firebaseio.com';
 });
 
 app.run(function ($ionicPlatform, DS, DSFirebaseAdapter) {
@@ -32,8 +32,8 @@ app.run(function ($ionicPlatform, DS, DSFirebaseAdapter) {
 
 });
 
-app.controller('booksCtrl', function (DS) {
-	DS.findAll('book').then(function (books) {
-		// all the books in firebase
-	});
-});
+// app.controller('booksCtrl', function (DS) {
+// 	DS.findAll('book').then(function (books) {
+// 		// all the books in firebase
+// 	});
+// });
