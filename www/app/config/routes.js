@@ -4,7 +4,9 @@ app.config(function ($stateProvider, $urlRouterProvider) {
 	$stateProvider
 		.state('login', {
 			url: '/login',
-			templateUrl: 'app/components/login/login.html'
+			templateUrl: 'app/components/login/login.html',
+			controller: 'LoginController',
+			controllerAs: 'lc'
 		})
 		.state('register', {
 			url: '/register',

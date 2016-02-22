@@ -4,10 +4,10 @@
 		<div class="h2">Please Log In:</div>
 		<form>
 			<label for="email">Email: </label>
-			<input type="email" placeholder="bob@bob.com">
+			<input type="email" ng-model="lc.email" placeholder="bob@bob.com">
 			<label for="password">Password: </label>
-			<input type="password" placeholder="*******">
-			<button class="button button-stable" ui-sref="dashboard">Login</button>
+			<input type="password" ng-model="lc.password" placeholder="*******">
+			<button class="button button-stable" ng-click="lc.login(lc.email, lc.password)">Login</button>
 			<button class="button button-stable" ui-sref="register">Register</button>
 		</form>
 	</div>

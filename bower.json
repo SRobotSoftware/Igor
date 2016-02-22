@@ -8,6 +8,9 @@
     "angular-ui-router": "^0.2.18"
   },
   "dependencies": {
-    "angular-ui-router": "ui-router#^0.2.18"
+    "angular-ui-router": "ui-router#^0.2.18",
+    "js-data": "^2.9.0",
+    "js-data-firebase": "^2.1.1",
+    "js-data-angular": "^3.1.0"
   }
 }
