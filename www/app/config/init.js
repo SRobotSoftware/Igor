@@ -3,13 +3,13 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-var app = angular.module('starter', ['ionic', 'ui.router', 'js-data'])
+var app = angular.module('starter', ['ionic', 'ui.router', 'js-data', 'firebase'])
 
 app.config(function (DSFirebaseAdapterProvider) {
 	DSFirebaseAdapterProvider.defaults.basePath = 'https://discoapp.firebaseio.com';
 });
 
-app.run(function ($ionicPlatform, DS, DSFirebaseAdapter) {
+app.run(function ($ionicPlatform, $rootScope, DS, DSFirebaseAdapter, User, AuthService) {
 	$ionicPlatform.ready(function () {
 		if (window.cordova && window.cordova.plugins.Keyboard) {
 			// Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -26,14 +26,40 @@ app.run(function ($ionicPlatform, DS, DSFirebaseAdapter) {
 		}
 	});
 
-	DS.adapters.firebase === DSFirebaseAdapter;
-	DS.registerAdapter('firebase', DSFirebaseAdapter, { default: true });
-	DS.defineResource('book');
+		$rootScope.$on('$stateChangeStart', function (event, toState, toStateParams) {
+		AuthService.authMember();
+	});
+
+	DS.registerAdapter('firebase',
+		DSFirebaseAdapter,
+		{ default: true });
+
+	angular.forEach(DS.definitions, function (Resource) {
+		var ref = DSFirebaseAdapter.ref.child(Resource.endpoint);
+		ref.on('child_changed', function (dataSnapshot) {
+			var data = dataSnapshot.val();
+			if (data[Resource.idAttribute]) {
+				Resource.inject(data);
+			}
+		});
+		ref.on('child_removed', function (dataSnapshot) {
+			var data = dataSnapshot.val();
+			if (data[Resource.idAttribute]) {
+				Resource.eject(data[Resource.idAttribute]);
+			}
+		})
+	});
 
 });
 
-// app.controller('booksCtrl', function (DS) {
-// 	DS.findAll('book').then(function (books) {
-// 		// all the books in firebase
-// 	});
-// });
+app.service('User', function (DS) {
+	return DS.defineResource('user');
+});
+app.service('Classroom', function (DS) {
+	return DS.defineResource({
+		name: 'classroom',
+		hasMany: {
+			users: 'users'
+		}
+		});
+});

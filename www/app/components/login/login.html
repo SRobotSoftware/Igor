@@ -3,12 +3,21 @@
 	<div>
 		<div class="h2">Please Log In:</div>
 		<form>
-			<label for="email">Email: </label>
-			<input type="email" ng-model="lc.email" placeholder="bob@bob.com">
-			<label for="password">Password: </label>
-			<input type="password" ng-model="lc.password" placeholder="*******">
-			<button class="button button-stable" ng-click="lc.login(lc.email, lc.password)">Login</button>
-			<button class="button button-stable" ui-sref="register">Register</button>
+			<form class="form">
+				<div class="form-group">
+					<label for="email">Email:</label>
+					<input class="form-control" type="email" ng-model="user.email">
+				</div>
+				<div class="form-group">
+					<label for="password">Password:</label>
+					<input class="form-control" type="password" ng-model="user.password">
+				</div>
+				<div class="button-group">
+					<button class="btn btn-primary" type="submit" ng-click="login()">Login</button>
+					<button class="btn btn-primary" type="submit" ng-click="register()">Register</button>
+				</div>
+			</form>
+			<div class="alert alert-danger" ng-show="authErr">{{authErr}}</div>
 		</form>
 	</div>
 

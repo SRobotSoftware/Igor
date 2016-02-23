@@ -6,7 +6,7 @@ app.config(function ($stateProvider, $urlRouterProvider) {
 			url: '/login',
 			templateUrl: 'app/components/login/login.html',
 			controller: 'LoginController',
-			controllerAs: 'lc'
+			// controllerAs: 'lc'
 		})
 		.state('register', {
 			url: '/register',
@@ -14,7 +14,8 @@ app.config(function ($stateProvider, $urlRouterProvider) {
 		})
 		.state('dashboard', {
 			url: '/dashboard',
-			templateUrl: 'app/components/dashboard/dashboard.html'
+			templateUrl: 'app/components/dashboard/dashboard.html',
+			controller: 'DashboardController'
 		})
 		.state('classroom', {
 			url: '/classroom', // Pull uid from URL
