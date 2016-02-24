@@ -13,12 +13,14 @@
 					<input class="form-control" type="password" ng-model="user.password">
 				</div>
 				<div class="button-group">
-					<button class="btn btn-primary" type="submit" ng-click="login()">Login</button>
-					<button class="btn btn-primary" type="submit" ng-click="register()">Register</button>
+					<button class="btn btn-primary" type="submit" ng-click="login(user)">Login</button>
+					<button class="btn btn-primary" type="submit" ng-click="register(user)">Register</button>
 				</div>
 			</form>
 			<div class="alert alert-danger" ng-show="authErr">{{authErr}}</div>
 		</form>
 	</div>
+    
+    <button ng-click="getStuff()">CLICK ME</button>
 
 </div>
