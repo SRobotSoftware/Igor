@@ -20,7 +20,14 @@
 			<div class="alert alert-danger" ng-show="authErr">{{authErr}}</div>
 		</form>
 	</div>
-    
-    <button ng-click="getStuff()">CLICK ME</button>
+
+    <button ng-click="getStuff()">CHECK XAUTH</button>
+    <button ng-click="createClassroom()">CREATE CLASSROOM</button>
+    <button ng-click="joinClassroom()">JOIN CLASSROOM</button>
+		{{bob}}
+
+		<div ng-repeat="b in bob">
+			<button ng-click="joinClassroom(b)">{{b}}</button>
+		</div>
 
 </div>
