@@ -5,6 +5,7 @@ app.controller('DashboardController', function ($rootScope, $scope, $state, DSFi
 	// }
 	var User = model.user;
 	var Classroom = model.classroom;
+	var myAuth = $rootScope.authData.uid;
 
 	Classroom.findAll();
 	Classroom.bindAll({}, $scope, 'classrooms');
@@ -16,11 +17,14 @@ app.controller('DashboardController', function ($rootScope, $scope, $state, DSFi
 			name: name
 		})
 			.then(function (res) {
-				User.find($rootScope.authData.uid).then(function (res2) {
+				User.find(myAuth).then(function (res2) {
 					var user = res2;
-					user.classrooms = user.classrooms || [];
-					user.classrooms.push(res.id);
-					User.update($rootScope.authData.uid, user)
+					var myClass = res.id.split('');
+					myClass.shift();
+					myClass = myClass.join('');
+					user.classrooms = user.classrooms || {};
+					user.classrooms[myClass] = myClass;
+					User.update(myAuth, user)
 						.then(function (res) {
 							console.log('suc', res);
 						})
@@ -40,16 +44,18 @@ app.controller('DashboardController', function ($rootScope, $scope, $state, DSFi
 
 
 	$scope.joinClassroom = function (classroom) {
-		classroom.students = classroom.students || [];
-		// if (currentUser is already in classroom) return
-		classroom.students.push($rootScope.authData.uid)
+		if (classroom.instructorId === myAuth) return;
+		classroom.students = classroom.students || {};
+		classroom.students[myAuth] = myAuth;
 		Classroom.update(classroom.id, classroom).then(function (res) {
-			User.find($rootScope.authData.uid).then(function (res2) {
+			var myClass = res.id.split('');
+			myClass.shift();
+			myClass = myClass.join('');
+			User.find(myAuth).then(function (res2) {
 				var user = res2;
-				user.classrooms = user.classrooms || [];
-				console.log(user.classrooms);
-				user.classrooms.push(res.id);
-				User.update($rootScope.authData.uid, user)
+				user.classrooms = user.classrooms || {};
+				user.classrooms[myClass] = myClass;
+				User.update(myAuth, user)
 					.then(function (res) {
 						console.log('suc', res);
 					})
