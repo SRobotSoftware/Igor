@@ -74,10 +74,42 @@ app.controller('DashboardController', function ($rootScope, $scope, $state, DSFi
 				console.log('err', res);
 			});
 	};
-
+	// Remove classroom from list
 	$scope.removeClassroom = function (classroom) {
+		// If there's any students, remove the classroom from their list as well
+		if (classroom.students) {
+			// loop through students
+			for (var i = 0; i < Object.keys(classroom.students).length; i++) {
+				console.log(Object.keys(classroom.students));
+				var current = Object.keys(classroom.students)[i];
+				removeClassFromUser(current, classroom);
+			}
+		}
+		removeClassFromUser(classroom.instructorId, classroom);
 		Classroom.destroy(classroom.id);
+	}
 
+	function removeClassFromUser(userToTarget, classToRemove) {
+		for (var i = 0; i < $scope.users.length; i++) {
+			if ($scope.users[i].id === userToTarget) {
+				var user = $scope.users[i];
+			}
+		}
+		// Take off the stupid '/' on the id
+		var myClass = classToRemove.id.split('');
+		myClass.shift();
+		myClass = myClass.join('');
+		// Remove class from local scope
+		user.classrooms[myClass] = null;
+		// Update the DS
+		console.log('PRE-UPDATE USER:', user);
+		User.update(user.id, user).then(function (res) {
+			console.log('UPDATE SUCCESS', res)
+		}).catch(function (res) {
+			console.log('UPDATE ERR', res)
+		});
+		// Push through adapter
+		User.save(user.id);
 	}
 
 	$scope.convertUser = function (user) {

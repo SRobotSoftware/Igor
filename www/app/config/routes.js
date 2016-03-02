@@ -18,7 +18,12 @@ app.config(function ($stateProvider, $urlRouterProvider) {
 			controller: 'DashboardController'
 		})
 		.state('classroom', {
-			url: '/classroom', // Pull uid from URL
+			url: '/classroom/:classroomId', // Pull uid from URL
 			templateUrl: 'app/components/classroom/classroom.html'
+		})
+		.state('control', {
+			url: '/control-panel',
+			templateUrl: 'app/components/control/control.html',
+			controller: 'ControlPanelController'
 		})
 });
