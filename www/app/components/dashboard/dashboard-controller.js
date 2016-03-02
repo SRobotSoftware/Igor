@@ -9,6 +9,8 @@ app.controller('DashboardController', function ($rootScope, $scope, $state, DSFi
 
 	Classroom.findAll();
 	Classroom.bindAll({}, $scope, 'classrooms');
+	User.findAll();
+	User.bindAll({}, $scope, 'users');
 
 	$scope.createClassroom = function (name) {
 		name = name || 'TEST CLASSROOM';
@@ -75,13 +77,14 @@ app.controller('DashboardController', function ($rootScope, $scope, $state, DSFi
 
 	$scope.removeClassroom = function (classroom) {
 		Classroom.destroy(classroom.id);
+
 	}
 
-	$scope.getStuff = function () {
-		User.find('5a0a48ed-533e-4cf8-a245-a47ddaec905c')
-			.then(function (data) {
-				debugger;
-			});
-	};
+	$scope.convertUser = function (user) {
+		for (var i = 0; i < $scope.users.length; i++) {
+			if ($scope.users[i].id === user) return $scope.users[i].name || $scope.users[i].email
+		}
+		return "Sorry no user found";
+	}
 
 });
