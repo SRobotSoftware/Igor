@@ -3,31 +3,19 @@
 	<div>
 		<div class="h2">Please Log In:</div>
 		<form>
-			<form class="form">
-				<div class="form-group">
-					<label for="email">Email:</label>
-					<input class="form-control" type="email" ng-model="user.email">
-				</div>
-				<div class="form-group">
-					<label for="password">Password:</label>
-					<input class="form-control" type="password" ng-model="user.password">
-				</div>
-				<div class="button-group">
-					<button class="btn btn-primary" type="submit" ng-click="login(user)">Login</button>
-					<button class="btn btn-primary" type="submit" ng-click="register(user)">Register</button>
-				</div>
-			</form>
-			<div class="alert alert-danger" ng-show="authErr">{{authErr}}</div>
+			<div class="form-group">
+				<label for="email">Email:</label>
+				<input class="form-control" type="email" ng-model="user.email">
+			</div>
+			<div class="form-group">
+				<label for="password">Password:</label>
+				<input class="form-control" type="password" ng-model="user.password">
+			</div>
+			<div class="button-group">
+				<button class="btn btn-primary" type="submit" ng-click="login(user)">Login</button>
+				<button class="btn btn-primary" type="submit" ng-click="register(user)">Register</button>
+			</div>
 		</form>
 	</div>
-
-    <button ng-click="getStuff()">CHECK XAUTH</button>
-    <button ng-click="createClassroom()">CREATE CLASSROOM</button>
-    <button ng-click="joinClassroom()">JOIN CLASSROOM</button>
-		{{bob}}
-
-		<div ng-repeat="b in bob">
-			<button ng-click="joinClassroom(b)">{{b}}</button>
-		</div>
 
 </div>

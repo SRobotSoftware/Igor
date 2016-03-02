@@ -29,7 +29,7 @@
 	<script src="app/config/init.js"></script>
 	<script src="app/config/constants.js"></script>
 	<script src="app/config/routes.js"></script>
-	<script src="app/services/user-service.js"></script>
+	<script src="app/services/auth-service.js"></script>
 	<script src="app/components/login/login-controller.js"></script>
 	<script src="app/components/dashboard/dashboard-controller.js"></script>
 </head>
@@ -37,8 +37,9 @@
 <body ng-app="starter">
 
 	<ion-pane>
-		<ion-header-bar class="bar-stable">
+		<ion-header-bar class="bar-stable" ng-controller="AuthController">
 			<h1 class="title">Disco</h1>
+			<button class="button button-royal" ng-click="logout()">Logout</button>
 		</ion-header-bar>
 		<ion-content>
 

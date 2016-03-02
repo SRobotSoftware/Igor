@@ -1,4 +1,3 @@
-
 app.constant('CONSTANTS', (function () {
 	var root = 'https://discoapp.firebaseio.com/';
 

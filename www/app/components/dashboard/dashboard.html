@@ -1,5 +1,25 @@
 <h1>DASHBOARD</h1>
-<p>
-	class list will go here.
-</p>
-<button class="button button-stable" ui-sref="login">Logout</button>
+<div>
+	<!--<button ng-click="getStuff()">CHECK XAUTH</button>-->
+	<input type="text" ng-model="classroomName" placeholder="Name">
+	<button class="button button-small button-balanced" ng-click="createClassroom(classroomName)">CREATE CLASSROOM</button>
+<ul>
+	<li ng-repeat="room in classrooms track by room.id">
+		<br />
+		<div>
+			Classroom: {{room.name}}
+			<br />
+			Instructor: {{room.instructorId}}
+		</div>
+		<button class="button button-small button-positive" ng-click="joinClassroom(room)">Join Classroom</button>
+		<button class="button button-small button-assertive" ng-click="removeClassroom(room)">REMOVE</button>
+		<div>Students:
+			<ul>
+				<li ng-repeat="student in room.students">
+					{{student}}
+				</li>
+			</ul>
+		</div>
+	</li>
+	</ul>
+</div>
