@@ -1,8 +1,5 @@
 app.controller('DashboardController', function ($rootScope, $scope, $state, DSFirebaseAdapter, model, AuthService) {
-	// $scope.logout = function () {
-	// 	AuthService.logout();
-	// 	$state.go('login');
-	// }
+
 	var User = model.user;
 	var Classroom = model.classroom;
 	var myAuth = $rootScope.authData.uid;
@@ -103,11 +100,7 @@ app.controller('DashboardController', function ($rootScope, $scope, $state, DSFi
 		user.classrooms[myClass] = null;
 		// Update the DS
 		console.log('PRE-UPDATE USER:', user);
-		User.update(user.id, user).then(function (res) {
-			console.log('UPDATE SUCCESS', res)
-		}).catch(function (res) {
-			console.log('UPDATE ERR', res)
-		});
+		// User.update(user.id, user)
 		// Push through adapter
 		User.save(user.id);
 	}
