@@ -17,12 +17,12 @@ app.config(function ($stateProvider, $urlRouterProvider) {
 			controller: 'DashboardController'
 		})
 		.state('classroom', {
-			url: '/classrooms/:classroomId',
+			url: '/dashboard/classrooms/:classroomId',
 			templateUrl: 'app/components/classroom/classroom.html',
 			controller: 'ClassroomController'
 		})
 		.state('control', {
-			url: '/control-panel',
+			url: 'dashboard/control-panel',
 			templateUrl: 'app/components/control/control.html',
 			controller: 'ControlPanelController'
 		})
