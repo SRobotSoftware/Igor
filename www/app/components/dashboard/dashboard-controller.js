@@ -3,11 +3,10 @@ app.controller('DashboardController', function ($rootScope, $scope, $state, DSFi
 	var User = model.user;
 	var Classroom = model.classroom;
 	var myAuth = $rootScope.authData.uid;
-	$scope.formTimer = false;
 	// Delay to prevent errors with convertUser on view
 	setTimeout(function () {
-		$scope.formTimer = true;
-	}, 1);
+		$rootScope.formTimer = true;
+	}, 10);
 
 	Classroom.findAll();
 	Classroom.bindAll({}, $scope, 'classrooms');

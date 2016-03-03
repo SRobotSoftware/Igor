@@ -17,7 +17,7 @@ app.config(function ($stateProvider, $urlRouterProvider) {
 			controller: 'DashboardController'
 		})
 		.state('classroom', {
-			url: '/dashboard/classrooms/:classroomId',
+			url: '/dashboard/:classroomId',
 			templateUrl: 'app/components/classroom/classroom.html',
 			controller: 'ClassroomController'
 		})
