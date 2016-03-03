@@ -3,17 +3,25 @@ app.controller('DashboardController', function ($rootScope, $scope, $state, DSFi
 	var User = model.user;
 	var Classroom = model.classroom;
 	var myAuth = $rootScope.authData.uid;
+	$scope.formTimer = false;
+	// Delay to prevent errors with convertUser on view
+	setTimeout(function () {
+		$scope.formTimer = true;
+	}, 1);
 
 	Classroom.findAll();
 	Classroom.bindAll({}, $scope, 'classrooms');
 	User.findAll();
 	User.bindAll({}, $scope, 'users');
 
-	$scope.createClassroom = function (name) {
-		name = name || 'TEST CLASSROOM';
+	$scope.createClassroom = function (newClassroom) {
+		if (!newClassroom) newClassroom = {};
+		newClassroom.name = newClassroom.name || $scope.convertUser(myAuth) + "'s Classroom";
+		newClassroom.description = newClassroom.description || 'A fun place to learn!';
 		Classroom.create({
 			instructorId: $rootScope.authData.uid,
-			name: name
+			name: newClassroom.name,
+			description: newClassroom.description
 		})
 			.then(function (res) {
 				User.find(myAuth).then(function (res2) {
@@ -71,7 +79,8 @@ app.controller('DashboardController', function ($rootScope, $scope, $state, DSFi
 				console.log('err', res);
 			});
 	};
-	// Remove classroom from list
+
+	// Destroy classroom
 	$scope.removeClassroom = function (classroom) {
 		// If there's any students, remove the classroom from their list as well
 		if (classroom.students) {
@@ -99,17 +108,31 @@ app.controller('DashboardController', function ($rootScope, $scope, $state, DSFi
 		// Remove class from local scope
 		user.classrooms[myClass] = null;
 		// Update the DS
-		console.log('PRE-UPDATE USER:', user);
 		// User.update(user.id, user)
 		// Push through adapter
 		User.save(user.id);
+	}
+
+	function removeUserFromClass(classToTarget, userToRemove) {
+		for (var i = 0; i < $scope.classrooms.length; i++) {
+			if ($scope.classrooms[i] === classToTarget) {
+				$scope.classrooms[i].students[userToRemove] = null;
+			}
+		}
+		Classroom.save(classToTarget);
+	}
+
+		// Remove classroom from list
+	$scope.leaveClassroom = function (classroom) {
+		removeUserFromClass(classroom, myAuth);
+		removeClassFromUser(myAuth, classroom);
 	}
 
 	$scope.convertUser = function (user) {
 		for (var i = 0; i < $scope.users.length; i++) {
 			if ($scope.users[i].id === user) return $scope.users[i].name || $scope.users[i].email
 		}
-		return "Sorry no user found";
+		return "None :(";
 	}
 
 });

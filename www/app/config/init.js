@@ -91,22 +91,3 @@ app.factory('model', function (DS) {
 		})
 	}
 });
-// // app.factory('Classroom', function (DS) {
-// // 	return DS.defineResource({
-// // 		name: 'classroom',
-// // 		endpoint: 'classrooms',
-// // 		relations: {
-// // 			belongsTo: {
-// // 				user: {
-// // 					localField: 'instructor',
-// // 					foreignKey: 'instructorId'
-// // 				}
-// // 			},
-// // 			hasMany: {
-// // 				users: {
-// // 					localField: 'student',
-// // 					foreignKey: 'studentId'
-// // 				}
-// // 			}
-// // 		}
-// 	});

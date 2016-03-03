@@ -1,3 +1,3 @@
-app.controller('ControlPanelController', function () {
+app.controller('ControlPanelController', function ($rootScope) {
 
 });

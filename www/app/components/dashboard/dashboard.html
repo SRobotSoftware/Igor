@@ -1,25 +1,50 @@
 <h1>Disco</h1>
-<h2>Welcome to your dashboard!</h2>
-<div>
-	<input type="text" ng-model="classroomName" placeholder="Name">
-	<button class="button button-small button-balanced" ng-click="createClassroom(classroomName)">CREATE CLASSROOM</button>
-<ul>
-	<li ng-repeat="room in classrooms track by room.id">
-		<br />
-		<div>
-			Classroom: {{room.name}}
-			<br />
-			Instructor: {{convertUser(room.instructorId)}}
+<h2>Welcome to your Disco Dashboard!</h2>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		Create a New Classroom:
+	</div>
+	<div class="panel-body" ng-if="formTimer">
+		<form class="form-inline" ng-submit="createClassroom(newClassroom); newClassroom={};">
+			<div class="form-group">
+				<label>Room Name:</label>
+				<input class="form-control" type="text" ng-model="newClassroom.name" placeholder="{{convertUser(authData.uid)}}'s Classroom">
+			</div>
+			<div class="form-group">
+				<label>Room Description:</label>
+				<input type="text" class="form-control" ng-model="newClassroom.description" placeholder="A fun place to learn!">
+			</div>
+			<button type="submit" class="btn btn-success">Create</button>
+		</form>
+	</div>
+	<div class="panel-heading">
+		Your Classrooms:
+	</div>
+	<div class="panel-body">
+		<div class="panel panel-default" ng-repeat="room in classrooms track by room.id">
+			<div class="panel-heading">
+				<div>
+					Classroom: {{room.name}}
+				</div>
+				<div>
+					Instructor: {{convertUser(room.instructorId)}}
+				</div>
+			</div>
+			<div class="panel-body">
+				<div>
+					Description: {{room.description}}
+				</div>
+				<button class="btn btn-primary" ui-sref="classroom({classroomId: room.id})">Enter Classroom</button>
+				<button class="btn btn-danger" ng-click="leaveClassroom(room)">Leave Classroom</button>
+				<button class="btn btn-warning" ng-click="joinClassroom(room)">Join Classroom</button>
+				<button class="btn btn-warning" ng-click="removeClassroom(room)">Destroy Classroom</button>
+			</div>
+			<div class="panel-heading">
+				Students:
+			</div>
+			<div class="panel-body" ng-repeat="student in room.students">
+				{{convertUser(student)}}
+			</div>
 		</div>
-		<button class="button button-small button-positive" ng-click="joinClassroom(room)">Join Classroom</button>
-		<button class="button button-small button-assertive" ng-click="removeClassroom(room)">REMOVE</button>
-		<div>Students:
-			<ul>
-				<li ng-repeat="student in room.students">
-					{{convertUser(student)}}
-				</li>
-			</ul>
-		</div>
-	</li>
-	</ul>
+	</div>
 </div>

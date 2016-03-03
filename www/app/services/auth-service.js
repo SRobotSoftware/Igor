@@ -9,6 +9,7 @@ app.service('AuthService', function ($rootScope, $state, DSFirebaseAdapter, mode
 
 	vm.logout = function () {
 		DSFirebaseAdapter.ref.unauth();
+		$rootScope.authData = null;
 		$state.go('login');
 		console.log('LOGGED OUT');
 	}
