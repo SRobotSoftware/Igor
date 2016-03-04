@@ -15,6 +15,7 @@ app.controller('ClassroomController', function ($rootScope, $scope, $stateParams
 		});
 	});
 	User.bindOne(myAuth, $scope, 'user');
+	var myResponse = null;
 
 
 	// setTimeout(function () {
@@ -66,5 +67,20 @@ app.controller('ClassroomController', function ($rootScope, $scope, $stateParams
 		}
 		Classroom.save($stateParams.classroomId);
 	}
+
+	$scope.respond = function (i, response) {
+		myResponse = response;
+		if (!$scope.classroom.topicTrack[i].response) $scope.classroom.topicTrack[i].response = {};
+		$scope.classroom.topicTrack[i].response[myAuth] = myResponse;
+		Classroom.save($stateParams.classroomId);
+	}
+
+	$scope.getResponse = function (index, response) {
+		var out = 0;
+		for (var key in $scope.classroom.topicTrack[index].response) {
+			if ($scope.classroom.topicTrack[index].response[key] === response) out++;
+		}
+		return out;
+	};
 
 });
