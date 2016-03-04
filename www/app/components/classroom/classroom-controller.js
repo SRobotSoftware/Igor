@@ -10,6 +10,7 @@ app.controller('ClassroomController', function ($rootScope, $scope, $stateParams
 		setTimeout(function () {
 			$scope.$apply(function () {
 				($scope.classroom.instructorId === myAuth) ? $scope.isStudent = false : $scope.isStudent = true;
+				if (!$scope.isStudent) pullFromQueue();
 			}, 1);
 		});
 	});
@@ -32,8 +33,37 @@ app.controller('ClassroomController', function ($rootScope, $scope, $stateParams
 	}
 
 	$scope.removeTopic = function (index) {
-		console.log(index);
 		$scope.classroom.topicTrack.splice(index, 1);
+		Classroom.save($stateParams.classroomId);
+	}
+
+	$scope.queueTopic = function (index) {
+		if (!$scope.classroom.topicQueue) $scope.classroom.topicQueue = [];
+		$scope.classroom.topicQueue.push($scope.classroom.topicTrack[index]);
+		$scope.classroom.topicTrack.splice(index, 1);
+		Classroom.save($stateParams.classroomId);
+	}
+
+	function pullFromQueue() {
+		if (!$scope.classroom.topicQueue) return;
+		if (!$scope.classroom.topicTrack) $scope.classroom.topicTrack = [];
+		while ($scope.classroom.topicQueue.length) {
+			$scope.classroom.topicTrack.push($scope.classroom.topicQueue.shift());
+		}
+		Classroom.save($stateParams.classroomId);
+	}
+
+	$scope.startLecture = function () {
+		$scope.classroom.isLecturing = true;
+		Classroom.save($stateParams.classroomId);
+	}
+
+	$scope.stopLecture = function () {
+		$scope.classroom.isLecturing = false;
+		if (!$scope.classroom.topicQueue) $scope.classroom.topicQueue = [];
+		while ($scope.classroom.topicTrack.length) {
+			$scope.classroom.topicQueue.push($scope.classroom.topicTrack.shift());
+		}
 		Classroom.save($stateParams.classroomId);
 	}
 
