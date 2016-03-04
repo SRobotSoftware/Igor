@@ -29,7 +29,7 @@
 					<button class="btn btn-success pull-right" ng-click="startLecture()">Start Lecture</button>
 				</div>
 				<div class="panel-body" ng-if="!classroom.topicTrack || !classroom.isLecturing && isStudent">
-					No Topics Currently Loaded
+					No Topics Currently Loaded <span ng-if="!classroom.isLecturing">- Session has not started yet</span>
 				</div>
 				<div ng-if="!isStudent || classroom.isLecturing" class="well well-sm" ng-repeat="topic in classroom.topicTrack track by $index">
 					{{topic.body}} - <span ng-if="!isStudent" class="text-danger" ng-click="removeTopic($index)">X</span>

@@ -1,5 +1,13 @@
 app.controller('ClassroomController', function ($rootScope, $scope, $stateParams, model) {
 
+	// THIS CONTROLLER NEEDS A HUGE REWRITE
+	// CREATE SCOPE VARIABLES FOR DISPLAY INFORMATION
+	// THINGS LIKE TOTAL NUMBER OF STUDENTS
+	// A MANIPULATABLE LOCAL TOPIC ARRAY
+	// TOTALS AND INDICATORS FOR TOPIC RESPONSES
+
+	// FOR THE LOVE OF GOD PLEASE USE A RESOLVE, THIS DIGEST CYCLE IS SILLY
+
 	var User = model.user;
 	var Classroom = model.classroom;
 	var myAuth = $rootScope.authData.uid;
