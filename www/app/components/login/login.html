@@ -1,14 +1,22 @@
-<div class="row">
+<div class="container">
 
-  <div class="col col-offset-33 col-33">
-    <div class="h2">Please Log In:</div>
-    <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et hic veritatis ipsam qui a dicta exercitationem, debitis fugiat sint iusto.</div>
-    <div>Odit iure non accusantium, error beatae quas facere deleniti consequuntur nam id cupiditate, dignissimos, quasi aliquid quia, ad sequi totam.</div>
-    <div>Esse optio doloremque harum facere impedit quae dolorem, ut, saepe porro corporis, placeat atque distinctio sint numquam. Sunt, consequatur illum!</div>
-  </div>
-
-  <div class="col">
-    <button class="button button-stable" ui-sref="dashboard">Go to Dash</button>
-  </div>
+	<div>
+		<h1>Disco</h1>
+		<div class="h2">Please Log In:</div>
+		<form>
+			<div class="form-group">
+				<label for="email">Email:</label>
+				<input class="form-control" type="email" ng-model="user.email">
+			</div>
+			<div class="form-group">
+				<label for="password">Password:</label>
+				<input class="form-control" type="password" ng-model="user.password">
+			</div>
+			<div class="button-group">
+				<button class="btn btn-primary" type="submit" ng-click="login(user)">Login</button>
+				<button class="btn btn-primary" type="submit" ng-click="register(user)">Register</button>
+			</div>
+		</form>
+	</div>
 
 </div>
