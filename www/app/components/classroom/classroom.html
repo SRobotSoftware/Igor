@@ -18,24 +18,31 @@
 				<div class="panel-heading">
 					Topic List:
 				</div>
-				<div class="panel-body">
+				<div ng-if="!isStudent" class="panel-body">
 					<form class="form-inline" ng-submit="addTopic(newTopic); newTopic={};">
 						<div class="form-group">
 							<input class="form-control" type="text" ng-model="newTopic.body" placeholder="New Topic">
 						</div>
 						<button type="submit" class="btn btn-success">Add</button>
+						<button class="btn btn-danger pull-right">End Lecture</button>
+						<button class="btn btn-success pull-right">Start Lecture</button>
 					</form>
 				</div>
 				<div class="panel-body" ng-if="!classroom.topicTrack">
 					No Topics Currently Loaded
 				</div>
-				<div class="panel-body" ng-repeat="topic in classroom.topicTrack track by $index">
+				<div class="well well-sm" ng-repeat="topic in classroom.topicTrack track by $index">
 					{{topic.body}} - <span class="text-danger" ng-click="removeTopic($index)">X</span>
-					<button class="btn btn-danger btn-xs pull-right"><i class="fa fa-inverse fa-ban"></i></button>
+					<button ng-if="isStudent" class="col-xs-1 btn btn-danger btn-xs pull-right"><i class="fa fa-inverse fa-ban"></i></button>
+					<button ng-if="!isStudent" class="col-xs-1 btn btn-danger btn-xs pull-right"> 1 </button>
 					<div class="col-xs-1 pull-right"></div>
-					<button class="btn btn-warning btn-xs pull-right"><i class="fa fa-exclamation-triangle"></i></button>
+					<button ng-if="isStudent" class="col-xs-1 btn btn-warning btn-xs pull-right"><i class="fa fa-exclamation-triangle"></i></button>
+					<button ng-if="!isStudent" class="col-xs-1 btn btn-warning btn-xs pull-right"> 5 </button>
 					<div class="col-xs-1 pull-right"></div>
-					<button class="btn btn-success btn-xs pull-right"><i class="fa fa-arrow-circle-right"></i></button>
+					<button ng-if="isStudent" class="col-xs-1 btn btn-success btn-xs pull-right"><i class="fa fa-arrow-circle-right"></i></button>
+					<button ng-if="!isStudent" class="col-xs-1 btn btn-success btn-xs pull-right"> 2 </button>
+					<div ng-if="!isStudent" class="col-xs-1 col-xs-1 pull-right"></div>
+					<button ng-if="!isStudent" class="col-xs-1 btn btn-success btn-xs pull-right"> Queue </button>
 				</div>
 			</div>
 		</div>

@@ -5,8 +5,16 @@ app.controller('ClassroomController', function ($rootScope, $scope, $stateParams
 	var myAuth = $rootScope.authData.uid;
 	Classroom.find($stateParams.classroomId);
 	Classroom.bindOne($stateParams.classroomId, $scope, 'classroom');
-	User.find(myAuth);
+	$scope.isStudent = true;
+	User.find(myAuth).then(function () {
+		setTimeout(function () {
+			$scope.$apply(function () {
+				($scope.classroom.instructorId === myAuth) ? $scope.isStudent = false : $scope.isStudent = true;
+			}, 1);
+		});
+	});
 	User.bindOne(myAuth, $scope, 'user');
+
 
 	// setTimeout(function () {
 	// 	console.log($scope.user);
