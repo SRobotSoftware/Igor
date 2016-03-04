@@ -11,7 +11,7 @@ app.controller('ClassroomController', function ($rootScope, $scope, $stateParams
 			$scope.$apply(function () {
 				($scope.classroom.instructorId === myAuth) ? $scope.isStudent = false : $scope.isStudent = true;
 				if (!$scope.isStudent) pullFromQueue();
-			}, 1);
+			}, 50);
 		});
 	});
 	User.bindOne(myAuth, $scope, 'user');

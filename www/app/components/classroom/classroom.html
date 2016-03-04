@@ -32,15 +32,17 @@
 					No Topics Currently Loaded
 				</div>
 				<div ng-if="!isStudent || classroom.isLecturing" class="well well-sm" ng-repeat="topic in classroom.topicTrack track by $index">
-					{{topic.body}} - <span ng-if="!isStudent" class="text-danger" ng-click="removeTopic($index)">X</span><span ng-if="isStudent">res:{{myResponse}}</span><span ng-if="!isStudent"> - Total Res: {{Object.keys(topic.response).length}}</span>
+					{{topic.body}} - <span ng-if="!isStudent" class="text-danger" ng-click="removeTopic($index)">X</span>
+					<span ng-if="isStudent">res:{{myResponse}}</span>
+					<span ng-if="!isStudent"> - Total Res: {{myVars.topic[$index].stop+myVars.topic[$index].slow+myVars.topic[$index].go}}</span>
 					<button ng-if="isStudent" class="col-xs-1 btn btn-danger btn-xs pull-right" ng-click="respond($index, 'stop')"><i class="fa fa-inverse fa-ban"></i></button>
-					<button ng-if="!isStudent" class="col-xs-1 btn btn-danger btn-xs pull-right"> {{getResponse($index, 'stop')}} </button>
+					<div ng-if="!isStudent" class="col-xs-1 text-danger pull-right"> {{myVars.topic[$index].stop = getResponse($index, 'stop')}} </div>
 					<div class="col-xs-1 pull-right"></div>
 					<button ng-if="isStudent" class="col-xs-1 btn btn-warning btn-xs pull-right" ng-click="respond($index, 'slow')"><i class="fa fa-exclamation-triangle"></i></button>
-					<button ng-if="!isStudent" class="col-xs-1 btn btn-warning btn-xs pull-right"> {{getResponse($index, 'slow')}} </button>
+					<div ng-if="!isStudent" class="col-xs-1 text-warning pull-right"> {{myVars.topic[$index].slow = getResponse($index, 'slow')}} </div>
 					<div class="col-xs-1 pull-right"></div>
 					<button ng-if="isStudent" class="col-xs-1 btn btn-success btn-xs pull-right" ng-click="respond($index, 'go')"><i class="fa fa-arrow-circle-right"></i></button>
-					<button ng-if="!isStudent" class="col-xs-1 btn btn-success btn-xs pull-right"> {{getResponse($index, 'go')}} </button>
+					<div ng-if="!isStudent" class="col-xs-1 text-success pull-right"> {{myVars.topic[$index].go = getResponse($index, 'go')}} </div>
 					<div ng-if="!isStudent" class="col-xs-1 col-xs-1 pull-right"></div>
 					<button ng-if="!isStudent" class="col-xs-1 btn btn-success btn-xs pull-right" ng-click="queueTopic($index)"> Queue </button>
 				</div>
