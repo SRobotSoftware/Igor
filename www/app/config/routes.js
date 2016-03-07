@@ -1,4 +1,6 @@
-app.config(function ($stateProvider, $urlRouterProvider) {
+angular
+	.module('Disco')
+	.config(function($stateProvider, $urlRouterProvider) {
 	$urlRouterProvider.otherwise('/login');
 
 	$stateProvider

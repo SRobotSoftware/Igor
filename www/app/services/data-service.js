@@ -1,3 +1,5 @@
-app.factory('DataService', function ($rootScope) {
+angular
+	.module('Disco')
+	.factory('DataService', function($rootScope) {
 
 });
