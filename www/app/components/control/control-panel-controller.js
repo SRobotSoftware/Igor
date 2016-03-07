@@ -1,5 +1,7 @@
 angular
 	.module('Disco')
-	.controller('ControlPanelController', function($rootScope) {
+	.controller('ControlPanelController', ControlPanelController)
 
-	});
+function ControlPanelController($rootScope) {
+
+};

@@ -59,37 +59,38 @@ angular
 		});
 
 	})
-	.factory('model', function(DS) {
+	.factory('model', model)
+function model(DS) {
 		return {
-			user: DS.defineResource({
-				name: 'user',
-				endpoint: 'users',
-				relations: {
-					hasMany: {
-						classrooms: {
-							localField: 'classroom',
-							foreignKey: 'classroomId'
-						}
+		user: DS.defineResource({
+			name: 'user',
+			endpoint: 'users',
+			relations: {
+				hasMany: {
+					classrooms: {
+						localField: 'classroom',
+						foreignKey: 'classroomId'
 					}
 				}
-			}),
-			classroom: DS.defineResource({
-				name: 'classroom',
-				endpoint: 'classrooms',
-				relations: {
-					belongsTo: {
-						user: {
-							localField: 'instructor',
-							foreignKey: 'instructorId'
-						}
-					},
-					hasMany: {
-						users: {
-							localField: 'student',
-							foreignKey: 'studentId'
-						}
+			}
+		}),
+		classroom: DS.defineResource({
+			name: 'classroom',
+			endpoint: 'classrooms',
+			relations: {
+				belongsTo: {
+					user: {
+						localField: 'instructor',
+						foreignKey: 'instructorId'
+					}
+				},
+				hasMany: {
+					users: {
+						localField: 'student',
+						foreignKey: 'studentId'
 					}
 				}
-			})
+			}
+		})
 		}
-	});
+};
