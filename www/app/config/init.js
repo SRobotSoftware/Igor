@@ -59,7 +59,8 @@ angular
 		});
 
 	})
-	.factory('model', model)
+	.factory('model', model);
+
 function model(DS) {
 		return {
 		user: DS.defineResource({

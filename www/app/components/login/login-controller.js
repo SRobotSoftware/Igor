@@ -1,16 +1,16 @@
 /* global Firebase */
 angular
 	.module('Disco')
-	.controller('LoginController', LoginController)
+	.controller('LoginController', LoginController);
 
 function LoginController($rootScope, $scope, $state, AuthService) {
+	var vm = this;
+	this.login = AuthService.login;
 
-		$scope.login = AuthService.login;
+	this.register = AuthService.register;
 
-		$scope.register = AuthService.register;
-
-		if ($rootScope.authData) {
+	if ($rootScope.authData) {
 		$state.go('dashboard');
-		}
+	}
 
-};
+}

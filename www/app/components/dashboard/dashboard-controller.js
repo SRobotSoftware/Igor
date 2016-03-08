@@ -1,25 +1,36 @@
 angular
 	.module('Disco')
-	.controller('DashboardController', DashboardController)
+	.controller('DashboardController', DashboardController);
 
-function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, model, AuthService) {
+function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, model, AuthService, DataFactory) {
 
-		var User = model.user;
-		var Classroom = model.classroom;
-		var myAuth = $rootScope.authData.uid;
-		// Delay to prevent errors with convertUser on view
-		setTimeout(function() {
+	var User = model.user;
+	var Classroom = model.classroom;
+	var myAuth = $rootScope.authData.uid;
+	var vm = this;
+	// Delay to prevent errors with convertUser on view
+	setTimeout(function() {
 		$rootScope.formTimer = true;
-		}, 10);
+	}, 10);
 
-		Classroom.findAll();
-		Classroom.bindAll({}, $scope, 'classrooms');
-		User.findAll();
-		User.bindAll({}, $scope, 'users');
+	Classroom.findAll();
+	Classroom.bindAll({}, $scope, 'classrooms');
+	User.findAll();
+	User.bindAll({}, $scope, 'users');
 
-		$scope.createClassroom = function(newClassroom) {
-		if (!newClassroom) newClassroom = {};
-		newClassroom.name = newClassroom.name || $scope.convertUser(myAuth) + "'s Classroom";
+	vm.createClassroom = createClassroom;
+	vm.joinClassroom = joinClassroom;
+	vm.removeClassroom = removeClassroom;
+	vm.removeClassroom = removeClassroom;
+	vm.leaveClassroom = leaveClassroom;
+	vm.convertUser = convertUser;
+
+	// Create Classroom
+	function createClassroom(newClassroom) {
+		if (!newClassroom) {
+			newClassroom = {};
+		}
+		newClassroom.name = newClassroom.name || convertUser(myAuth) + '\'s Classroom';
 		newClassroom.description = newClassroom.description || 'A fun place to learn!';
 		Classroom.create({
 			instructorId: $rootScope.authData.uid,
@@ -50,11 +61,13 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 			.catch(function(res) {
 				console.log('err', res);
 			});
-		};
+	};
 
-
-		$scope.joinClassroom = function(classroom) {
-		if (classroom.instructorId === myAuth) return;
+	// Join classroom
+	function joinClassroom(classroom) {
+		if (classroom.instructorId === myAuth) {
+			return;
+		}
 		classroom.students = classroom.students || {};
 		classroom.students[myAuth] = myAuth;
 		Classroom.update(classroom.id, classroom).then(function(res) {
@@ -81,10 +94,10 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 			.catch(function(res) {
 				console.log('err', res);
 			});
-		};
+	}
 
-		// Destroy classroom
-		$scope.removeClassroom = function(classroom) {
+	// Destroy classroom
+	function removeClassroom(classroom) {
 		// If there's any students, remove the classroom from their list as well
 		if (classroom.students) {
 			// loop through students
@@ -96,9 +109,26 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 		}
 		removeClassFromUser(classroom.instructorId, classroom);
 		Classroom.destroy(classroom.id);
-		}
+	}
 
-		function removeClassFromUser(userToTarget, classToRemove) {
+	// Remove classroom from list
+	function leaveClassroom(classroom) {
+		removeUserFromClass(classroom, myAuth);
+		removeClassFromUser(myAuth, classroom);
+	}
+
+	// Convert uid to Name or Email or err
+	function convertUser(user) {
+		for (var i = 0; i < $scope.users.length; i++) {
+			if ($scope.users[i].id === user) {
+				return $scope.users[i].name || $scope.users[i].email;
+			}
+		}
+		return 'None :(';
+	}
+
+	// Removes classroom reference from user
+	function removeClassFromUser(userToTarget, classToRemove) {
 		for (var i = 0; i < $scope.users.length; i++) {
 			if ($scope.users[i].id === userToTarget) {
 				var user = $scope.users[i];
@@ -109,33 +139,20 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 		myClass.shift();
 		myClass = myClass.join('');
 		// Remove class from local scope
-		user.classrooms[myClass] = null;
+		userToTarget.classrooms[myClass] = null;
 		// Update the DS
 		// User.update(user.id, user)
 		// Push through adapter
-		User.save(user.id);
-		}
+		User.save(userToTarget.id);
+	}
 
-		function removeUserFromClass(classToTarget, userToRemove) {
+	// Remove user reference from classroom
+	function removeUserFromClass(classToTarget, userToRemove) {
 		for (var i = 0; i < $scope.classrooms.length; i++) {
 			if ($scope.classrooms[i] === classToTarget) {
 				$scope.classrooms[i].students[userToRemove] = null;
 			}
 		}
 		Classroom.save(classToTarget);
-		}
-
-		// Remove classroom from list
-		$scope.leaveClassroom = function(classroom) {
-		removeUserFromClass(classroom, myAuth);
-		removeClassFromUser(myAuth, classroom);
-		}
-
-		$scope.convertUser = function(user) {
-		for (var i = 0; i < $scope.users.length; i++) {
-			if ($scope.users[i].id === user) return $scope.users[i].name || $scope.users[i].email
-		}
-		return "None :(";
-		}
-
-};
+	}
+}

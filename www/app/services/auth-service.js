@@ -1,15 +1,16 @@
 angular
 	.module('Disco')
-	.controller('AuthController', AuthController)
+	.controller('AuthController', AuthController);
 
 function AuthController($rootScope, $scope, AuthService) {
-		$scope.logout = AuthService.logout;
-		if (!$rootScope.authData) { AuthService.authMember(); }
-};
+	var vm = this;
+	vm.logout = AuthService.logout;
+	if (!$rootScope.authData) { AuthService.authMember(); }
+}
 
 angular
 	.module('Disco')
-	.service('AuthService', AuthService)
+	.service('AuthService', AuthService);
 
 function AuthService($rootScope, $state, DSFirebaseAdapter, model) {
 		var User = model.user;
@@ -20,7 +21,7 @@ function AuthService($rootScope, $state, DSFirebaseAdapter, model) {
 		$rootScope.authData = null;
 		$state.go('login');
 		console.log('LOGGED OUT');
-		}
+		};
 
 		vm.login = function(user) {
 		console.log('LOGGING IN');
@@ -62,4 +63,4 @@ function AuthService($rootScope, $state, DSFirebaseAdapter, model) {
 		if (authData) $rootScope.authData = authData;
 		};
 
-};
+}

@@ -5,14 +5,14 @@
 		Create a New Classroom:
 	</div>
 	<div class="panel-body" ng-if="formTimer">
-		<form class="form-inline" ng-submit="createClassroom(newClassroom); newClassroom={};">
+		<form class="form-inline" ng-submit="dc.createClassroom(newClassroom); newClassroom={};">
 			<div class="form-group">
 				<label>Room Name:</label>
-				<input class="form-control" type="text" ng-model="newClassroom.name" placeholder="{{convertUser(authData.uid)}}'s Classroom">
+				<input class="form-control" type="text" ng-model="dc.newClassroom.name" placeholder="{{dc.convertUser(authData.uid)}}'s Classroom">
 			</div>
 			<div class="form-group">
 				<label>Room Description:</label>
-				<input type="text" class="form-control" ng-model="newClassroom.description" placeholder="A fun place to learn!">
+				<input type="text" class="form-control" ng-model="dc.newClassroom.description" placeholder="A fun place to learn!">
 			</div>
 			<button type="submit" class="btn btn-success">Create</button>
 		</form>
@@ -35,15 +35,15 @@
 					Description: {{room.description}}
 				</div>
 				<button class="btn btn-primary" ui-sref="classroom({classroomId: room.id})">Enter Classroom</button>
-				<button class="btn btn-danger" ng-click="leaveClassroom(room)">Leave Classroom</button>
-				<button class="btn btn-warning" ng-click="joinClassroom(room)">Join Classroom</button>
-				<button class="btn btn-warning" ng-click="removeClassroom(room)">Destroy Classroom</button>
+				<button class="btn btn-danger" ng-click="dc.leaveClassroom(room)">Leave Classroom</button>
+				<button class="btn btn-warning" ng-click="dc.joinClassroom(room)">Join Classroom</button>
+				<button class="btn btn-warning" ng-click="dc.removeClassroom(room)">Destroy Classroom</button>
 			</div>
 			<div class="panel-heading">
 				Students:
 			</div>
 			<div class="panel-body" ng-repeat="student in room.students">
-				{{convertUser(student)}}
+				{{dc.convertUser(student)}}
 			</div>
 		</div>
 	</div>
