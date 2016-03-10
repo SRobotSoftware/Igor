@@ -7,12 +7,23 @@
 
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/bootstrap.css" rel="stylesheet">
 	<link href="css/style.css" rel="stylesheet">
 
 </head>
 
 <body ng-app="Disco">
+
+	<nav class="navbar navbar-default navbar-static-top" ng-controller="AuthController as ac">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand">
+					<img alt="Brand" width="20px" src="img/disco.png">
+				</a>
+			</div>
+			<button type="button" class="btn btn-danger pull-right navbar-btn" ng-click="ac.logout()">Logout <i class="fa fa-sign-out"></i></button>
+		</div>
+	</nav>
 
 	<div class="container-fluid">
 		<ui-view>

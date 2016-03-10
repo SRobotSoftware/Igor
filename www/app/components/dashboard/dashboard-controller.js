@@ -12,9 +12,27 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 	setTimeout(function() {
 		$rootScope.formTimer = true;
 	}, 10);
+	// THIS IS SUPER DUMB
+	vm.classrooms = [];
+	Classroom.findAll().then(function(res) {
+		for (var i = 0; i < res.length; i++) {
+			for (var student in res[i].students) {
+				if (student === myAuth) vm.classrooms.push(res[i]);
+			}
+			if (res[i].instructorId === myAuth) vm.classrooms.push(res[i]);
+		}
+	});
+	// var student = {};
+	// student[myAuth] = { "===": 2 };
+	// 	Classroom.bindAll({
+	// 		where: {
+	// 			students: student
+	// 			// instructorId: {
+	// 			// 	'|contains': myAuth
+	// 			// }
+	// 		}
+	// }, $scope, 'classrooms');
 
-	Classroom.findAll();
-	Classroom.bindAll({}, $scope, 'classrooms');
 	User.findAll();
 	User.bindAll({}, $scope, 'users');
 
@@ -61,7 +79,7 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 			.catch(function(res) {
 				console.log('err', res);
 			});
-	};
+	}
 
 	// Join classroom
 	function joinClassroom(classroom) {
@@ -98,6 +116,7 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 
 	// Destroy classroom
 	function removeClassroom(classroom) {
+		console.log(classroom);
 		// If there's any students, remove the classroom from their list as well
 		if (classroom.students) {
 			// loop through students
@@ -129,9 +148,11 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 
 	// Removes classroom reference from user
 	function removeClassFromUser(userToTarget, classToRemove) {
+		var user = null;
+		if (classToRemove.instructorId === userToTarget) return;
 		for (var i = 0; i < $scope.users.length; i++) {
 			if ($scope.users[i].id === userToTarget) {
-				var user = $scope.users[i];
+				user = $scope.users[i];
 			}
 		}
 		// Take off the stupid '/' on the id
@@ -139,18 +160,20 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 		myClass.shift();
 		myClass = myClass.join('');
 		// Remove class from local scope
-		userToTarget.classrooms[myClass] = null;
+		user.classrooms[myClass] = null;
 		// Update the DS
 		// User.update(user.id, user)
 		// Push through adapter
-		User.save(userToTarget.id);
+		User.save(user.id);
 	}
 
 	// Remove user reference from classroom
 	function removeUserFromClass(classToTarget, userToRemove) {
-		for (var i = 0; i < $scope.classrooms.length; i++) {
-			if ($scope.classrooms[i] === classToTarget) {
-				$scope.classrooms[i].students[userToRemove] = null;
+		for (var i = 0; i < vm.classrooms.length; i++) {
+			if (vm.classrooms[i] === classToTarget) {
+				if (vm.classrooms[i].students) {
+					vm.classrooms[i].students[userToRemove] = null;
+				}
 			}
 		}
 		Classroom.save(classToTarget);

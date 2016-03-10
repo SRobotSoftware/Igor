@@ -48,6 +48,7 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 	vm.stopLecture = stopLecture;
 	vm.respond = respond;
 	vm.getResponse = getResponse;
+	vm.joinClassroom = joinClassroom;
 
 	function addTopic(topic) {
 		if (!topic) {
@@ -121,6 +122,38 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 			}
 		}
 		return out;
+	}
+
+	function joinClassroom(classroom) {
+		if (classroom.instructorId === myAuth) {
+			return;
+		}
+		classroom.students = classroom.students || {};
+		classroom.students[myAuth] = myAuth;
+		Classroom.update(classroom.id, classroom).then(function(res) {
+			var myClass = res.id.split('');
+			myClass.shift();
+			myClass = myClass.join('');
+			User.find(myAuth).then(function(res2) {
+				var user = res2;
+				user.classrooms = user.classrooms || {};
+				user.classrooms[myClass] = myClass;
+				User.update(myAuth, user)
+					.then(function(res) {
+						console.log('suc', res);
+					})
+					.catch(function(res) {
+						console.log('err', res);
+					});
+				console.log('success', res);
+			})
+				.catch(function(res) {
+					console.log('err', res);
+				});
+		})
+			.catch(function(res) {
+				console.log('err', res);
+			});
 	}
 
 }
