@@ -72,5 +72,5 @@ function model(DS) {
 				}
 			}
 		})
-		}
-};
+		};
+}

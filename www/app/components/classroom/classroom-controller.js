@@ -16,6 +16,7 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 	var classId = $stateParams.classroomId;
 	var vm = this;
 	var myResponse = null;
+	$scope.joined = false;
 
 	Classroom.find(classId).then(load);
 
@@ -27,8 +28,11 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 			if (room.instructorId === myAuth) {
 				pullFromQueue();
 				vm.isStudent = false;
+				$scope.joined = true;
 			} else {
 				vm.isStudent = true;
+				if (!room.students) room.students = {};
+				if (room.students[myAuth]) $scope.joined = true;
 			}
 			$scope.loaded = true;
 			// $scope.$apply();
@@ -125,10 +129,9 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 	}
 
 	function joinClassroom(classroom) {
-		if (classroom.instructorId === myAuth) {
-			return;
-		}
+		if (classroom.instructorId === myAuth) return;
 		classroom.students = classroom.students || {};
+		if (classroom.students[myAuth]) return;
 		classroom.students[myAuth] = myAuth;
 		Classroom.update(classroom.id, classroom).then(function(res) {
 			var myClass = res.id.split('');
@@ -154,6 +157,7 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 			.catch(function(res) {
 				console.log('err', res);
 			});
+		$scope.joined = true;
 	}
 
 }

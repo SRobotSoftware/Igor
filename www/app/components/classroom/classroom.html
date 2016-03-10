@@ -1,9 +1,17 @@
 <div class="container-fluid">
 	<!--Heading-->
 	<img class="text-center" src="img/spinner.gif" alt="LOADING..." ng-show="!loaded">
-	<div class="panel panel-default" ng-show="loaded">
+	<div class="panel panel-default" ng-show="loaded && !joined">
+		<div class="panel-heading">JOIN OR DIE</div>
+		<div class="panel-body">
+			<button class="btn btn-primary btn-xs" ng-click="cc.joinClassroom(cc.classroom)">JOIN CLASSROOM</button>
+			<small>OR DIE</small>
+		</div>
+	</div>
+	<!--CONTENT-->
+	<div class="panel panel-default" ng-show="loaded && joined">
 		<div class="panel-heading">
-			{{cc.classroom.name}} - <button class="btn btn-primary btn-xs" ng-click="cc.joinClassroom(cc.classroom)">JOIN CLASSROOM</button>
+			{{cc.classroom.name}}
 			<button class="btn btn-info btn-xs pull-right" ui-sref="dashboard">Back to Dashboard</button>
 		</div>
 		<div class="panel-body">

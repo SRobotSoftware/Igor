@@ -63,21 +63,8 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 					myClass = myClass.join('');
 					user.classrooms = user.classrooms || {};
 					user.classrooms[myClass] = myClass;
-					User.update(myAuth, user)
-						.then(function(res) {
-							console.log('suc', res);
-						})
-						.catch(function(res) {
-							console.log('err', res);
-						});
-					console.log('success', res);
-				})
-					.catch(function(res) {
-						console.log('err', res);
-					});
-			})
-			.catch(function(res) {
-				console.log('err', res);
+					User.update(myAuth, user);
+				});
 			});
 	}
 
@@ -96,22 +83,9 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 				var user = res2;
 				user.classrooms = user.classrooms || {};
 				user.classrooms[myClass] = myClass;
-				User.update(myAuth, user)
-					.then(function(res) {
-						console.log('suc', res);
-					})
-					.catch(function(res) {
-						console.log('err', res);
-					});
-				console.log('success', res);
-			})
-				.catch(function(res) {
-					console.log('err', res);
-				});
-		})
-			.catch(function(res) {
-				console.log('err', res);
+				User.update(myAuth, user);
 			});
+		});
 	}
 
 	// Destroy classroom
