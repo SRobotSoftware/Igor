@@ -1,9 +1,10 @@
 <h2>Welcome to your Disco Dashboard!</h2>
-<div class="panel panel-default">
+<img class="text-center" src="img/spinner.gif" alt="LOADING..." ng-hide="loaded">
+<div class="panel panel-default" ng-if="loaded">
 	<div class="panel-heading">
 		Create a New Classroom:
 	</div>
-	<div class="panel-body" ng-if="formTimer">
+	<div class="panel-body">
 		<form class="form-inline" ng-submit="dc.createClassroom(newClassroom); newClassroom={};">
 			<div class="form-group">
 				<label>Room Name:</label>

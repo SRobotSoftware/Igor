@@ -8,30 +8,8 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 	var Classroom = model.classroom;
 	var myAuth = $rootScope.authData.uid;
 	var vm = this;
-	// Delay to prevent errors with convertUser on view
-	setTimeout(function() {
-		$rootScope.formTimer = true;
-	}, 10);
-	// THIS IS SUPER DUMB
-	vm.classrooms = [];
-	Classroom.findAll().then(function(res) {
-		for (var i = 0; i < res.length; i++) {
-			for (var student in res[i].students) {
-				if (student === myAuth) vm.classrooms.push(res[i]);
-			}
-			if (res[i].instructorId === myAuth) vm.classrooms.push(res[i]);
-		}
-	});
-	// var student = {};
-	// student[myAuth] = { "===": 2 };
-	// 	Classroom.bindAll({
-	// 		where: {
-	// 			students: student
-	// 			// instructorId: {
-	// 			// 	'|contains': myAuth
-	// 			// }
-	// 		}
-	// }, $scope, 'classrooms');
+
+	vm.classrooms = findClassrooms(myAuth);
 
 	User.findAll();
 	User.bindAll({}, $scope, 'users');
@@ -42,6 +20,18 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 	vm.removeClassroom = removeClassroom;
 	vm.leaveClassroom = leaveClassroom;
 	vm.convertUser = convertUser;
+
+	// Finds all Classrooms the user participates in
+	function findClassrooms(user) {
+		var result = [];
+		User.find(user).then(function(thisUser) {
+			for (var classroom in thisUser.classrooms) {
+				Classroom.find(classroom).then(function(res) { result.push(res); });
+			}
+		});
+		$scope.loaded = true;
+		return result;
+	}
 
 	// Create Classroom
 	function createClassroom(newClassroom) {
@@ -117,7 +107,7 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 				return $scope.users[i].name || $scope.users[i].email;
 			}
 		}
-		return 'None :(';
+		return 'Name not Found';
 	}
 
 	// Removes classroom reference from user
