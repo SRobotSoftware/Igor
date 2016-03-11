@@ -12,7 +12,12 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 
 	var User = model.user;
 	var Classroom = model.classroom;
-	var myAuth = $rootScope.authData.uid;
+		var myAuth;
+	if ($rootScope.authData) {
+		myAuth = $rootScope.authData.uid;
+	} else {
+		$state.go('login');
+	}
 	var classId = $stateParams.classroomId;
 	var vm = this;
 	var myResponse = null;

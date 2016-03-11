@@ -2,11 +2,16 @@ angular
 	.module('Disco')
 	.controller('DashboardController', DashboardController);
 
-function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, model, AuthService, DataFactory) {
+function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, model, AuthService) {
 
 	var User = model.user;
 	var Classroom = model.classroom;
-	var myAuth = $rootScope.authData.uid;
+	var myAuth;
+	if ($rootScope.authData) {
+		myAuth = $rootScope.authData.uid;
+	} else {
+		$state.go('login');
+	}
 	var vm = this;
 
 	vm.classrooms = findClassrooms(myAuth);

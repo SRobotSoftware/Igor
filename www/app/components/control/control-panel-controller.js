@@ -5,7 +5,12 @@ angular
 function ControlPanelController($rootScope, $scope, model) {
 
 	var User = model.user;
-	var myAuth = $rootScope.authData.uid;
+	var myAuth;
+	if ($rootScope.authData) {
+		myAuth = $rootScope.authData.uid;
+	} else {
+		$state.go('login');
+	}
 	var vm = this;
 
 	User.find(myAuth).then(load);
