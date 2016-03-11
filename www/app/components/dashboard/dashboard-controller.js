@@ -23,14 +23,13 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 	vm.isInstructor = isInstructor;
 	vm.displayLink = displayLink;
 
-	function displayLink(roomID) {
-		var myID = roomID.split('');
-		myID.shift();
-		myID = myID.join('');
-		var out = 'http://localhost:8080/#/dashboard/~2F' + myID;
+	// Displays a link with the proper URL for a given classroom
+	function displayLink(room) {
+		var out = 'http://localhost:8080/#/dashboard' + room.id;
 		return out;
 	}
 
+	// Checks if user is the instructor for a given classroom
 	function isInstructor(classroom) {
 		return classroom.instructorId === myAuth;
 	}
@@ -68,6 +67,7 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 					user.classrooms = user.classrooms || {};
 					user.classrooms[myClass] = myClass;
 					User.update(myAuth, user);
+					vm.classrooms = findClassrooms(myAuth);
 				});
 			});
 	}
@@ -106,12 +106,14 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 		}
 		removeClassFromUser(classroom.instructorId, classroom);
 		Classroom.destroy(classroom.id);
+		vm.classrooms = findClassrooms(myAuth);
 	}
 
 	// Remove classroom from list
 	function leaveClassroom(classroom) {
 		removeUserFromClass(classroom, myAuth);
 		removeClassFromUser(myAuth, classroom);
+		vm.classrooms = findClassrooms(myAuth);
 	}
 
 	// Convert uid to Name or Email or err

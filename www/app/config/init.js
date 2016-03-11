@@ -2,7 +2,8 @@ angular
 	.module('Disco', [
 		'ui.router',
 		'js-data',
-		'firebase'
+		'firebase',
+		'ngAnimate'
 		])
 		.config(function(DSFirebaseAdapterProvider, DSProvider) {
 		DSFirebaseAdapterProvider.defaults.basePath = 'https://discoapp.firebaseio.com';
