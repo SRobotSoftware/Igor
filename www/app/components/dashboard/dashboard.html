@@ -24,7 +24,7 @@
 		<div class="panel panel-default" ng-repeat="room in dc.classrooms track by room.id">
 			<div class="panel-heading">
 				<div>
-					Classroom: {{room.name}}
+					Classroom: {{room.name}}<span ng-if="dc.isInstructor(room)"> - Link: <input type="text" onclick="this.focus();this.select()" value="{{dc.displayLink(room.id)}}" readonly="readonly"></input></span>
 				</div>
 				<div>
 					Instructor: {{dc.convertUser(room.instructorId)}}
@@ -35,9 +35,8 @@
 					Description: {{room.description}}
 				</div>
 				<button class="btn btn-success" ui-sref="classroom({classroomId: room.id})">Enter Classroom</button>
-				<button class="btn btn-danger" ng-click="dc.leaveClassroom(room)">Leave Classroom</button>
-				<!--<button class="btn btn-warning" ng-click="dc.joinClassroom(room)">Join Classroom</button>-->
-				<button class="btn btn-warning" ng-click="dc.removeClassroom(room)">Destroy Classroom</button>
+				<button class="btn btn-danger" ng-if="!dc.isInstructor(room)" ng-click="dc.leaveClassroom(room)">Leave Classroom</button>
+				<button class="btn btn-warning" ng-if="dc.isInstructor(room)" ng-click="dc.removeClassroom(room)">Delete Classroom</button>
 			</div>
 			<div class="panel-heading">
 				Students:

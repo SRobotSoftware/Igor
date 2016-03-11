@@ -20,6 +20,20 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 	vm.removeClassroom = removeClassroom;
 	vm.leaveClassroom = leaveClassroom;
 	vm.convertUser = convertUser;
+	vm.isInstructor = isInstructor;
+	vm.displayLink = displayLink;
+
+	function displayLink(roomID) {
+		var myID = roomID.split('');
+		myID.shift();
+		myID = myID.join('');
+		var out = 'http://localhost:8080/#/dashboard/~2F' + myID;
+		return out;
+	}
+
+	function isInstructor(classroom) {
+		return classroom.instructorId === myAuth;
+	}
 
 	// Finds all Classrooms the user participates in
 	function findClassrooms(user) {
