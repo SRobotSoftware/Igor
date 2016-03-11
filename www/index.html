@@ -3,57 +3,57 @@
 
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-	<title></title>
+	<title>Disco</title>
 
-	<link href="lib/ionic/css/ionic.css" rel="stylesheet">
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	<link href="css/bootstrap.css" rel="stylesheet">
 	<link href="css/style.css" rel="stylesheet">
 
-	<!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
-    <link href="css/ionic.app.css" rel="stylesheet">
-    -->
+</head>
 
-	<!-- ionic/angularjs js -->
-	<script src="lib/ionic/js/ionic.bundle.js"></script>
-	<script src="lib/angular-ui-router/release/angular-ui-router.min.js"></script>
+<body ng-app="Disco">
+
+	<nav class="navbar navbar-default navbar-static-top" ng-controller="AuthController as ac">
+		<div class="container">
+			<button class="btn btn-default pull-left navbar-btn" ui-sref="dashboard">
+				<div class="navbar-header">
+					<img alt="Brand" width="20px" src="img/disco.png"> Disco
+				</div>
+			</button>
+			<button type="button" class="btn btn-danger pull-right navbar-btn" ng-click="ac.logout()"><i class="fa fa-sign-out"></i></button>
+			<button type="button" class="btn btn-info pull-right navbar-btn" ui-sref="control"><i class="fa fa-user"></i></button>
+			<button type="button" class="btn btn-primary pull-right navbar-btn" ui-sref="dashboard"><i class="fa fa-pencil"></i></button>
+		</div>
+	</nav>
+
+	<div class="container-fluid">
+		<ui-view>
+
+		</ui-view>
+	</div>
+
+	<!-- js libs -->
+	<script src="lib/angular/angular.js"></script>
+	<script src="lib/angular-animate/angular-animate.js"></script>
+	<script src="lib/angular-ui-router/release/angular-ui-router.js"></script>
 	<script src="lib/firebase/firebase.js"></script>
 	<script src="lib/angularfire/dist/angularfire.js"></script>
 	<script src="lib/js-data/dist/js-data.js"></script>
 	<script src="lib/js-data-firebase/dist/js-data-firebase.js"></script>
 	<script src="lib/js-data-angular/dist/js-data-angular.js"></script>
 
-	<!-- cordova script (this will be a 404 during development) -->
-	<script src="cordova.js"></script>
-
 	<!-- your app's js -->
 	<script src="app/config/init.js"></script>
 	<script src="app/config/constants.js"></script>
 	<script src="app/config/routes.js"></script>
 	<script src="app/services/auth-service.js"></script>
+	<script src="app/services/data-service.js"></script>
 	<script src="app/services/topic-service.js"></script>
 	<script src="app/components/login/login-controller.js"></script>
 	<script src="app/components/dashboard/dashboard-controller.js"></script>
 	<script src="app/components/control/control-panel-controller.js"></script>
 	<script src="app/components/classroom/classroom-controller.js"></script>
-</head>
-
-<body ng-app="starter">
-
-	<ion-pane>
-		<ion-header-bar class="bar-stable" ng-controller="AuthController">
-			<h1 class="title">Disco</h1>
-			<button class="button button-royal" ng-click="logout()">Logout</button>
-		</ion-header-bar>
-		<ion-content>
-
-			<ui-view>
-
-			</ui-view>
-
-		</ion-content>
-	</ion-pane>
 </body>
 
 </html>

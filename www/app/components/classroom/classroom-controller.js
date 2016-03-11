@@ -1,4 +1,8 @@
-app.controller('ClassroomController', function ($rootScope, $scope, $stateParams, model) {
+angular
+	.module('Disco')
+	.controller('ClassroomController', ClassroomController);
+
+function ClassroomController($rootScope, $scope, $stateParams, model) {
 
 	// THIS CONTROLLER NEEDS A HUGE REWRITE
 	// CREATE SCOPE VARIABLES FOR DISPLAY INFORMATION
@@ -6,89 +10,159 @@ app.controller('ClassroomController', function ($rootScope, $scope, $stateParams
 	// A MANIPULATABLE LOCAL TOPIC ARRAY
 	// TOTALS AND INDICATORS FOR TOPIC RESPONSES
 
-	// FOR THE LOVE OF GOD PLEASE USE A RESOLVE, THIS DIGEST CYCLE IS SILLY
-
 	var User = model.user;
 	var Classroom = model.classroom;
-	var myAuth = $rootScope.authData.uid;
-	Classroom.find($stateParams.classroomId);
-	Classroom.bindOne($stateParams.classroomId, $scope, 'classroom');
-	$scope.isStudent = true;
-	User.find(myAuth).then(function () {
-		setTimeout(function () {
-			$scope.$apply(function () {
-				($scope.classroom.instructorId === myAuth) ? $scope.isStudent = false : $scope.isStudent = true;
-				if (!$scope.isStudent) pullFromQueue();
-			}, 50);
-		});
-	});
-	User.bindOne(myAuth, $scope, 'user');
+		var myAuth;
+	if ($rootScope.authData) {
+		myAuth = $rootScope.authData.uid;
+	} else {
+		$state.go('login');
+	}
+	var classId = $stateParams.classroomId;
+	var vm = this;
 	var myResponse = null;
+	$scope.joined = false;
+
+	Classroom.find(classId).then(load);
+
+	function load(room) {
+		vm.isStudent = true;
+		vm.classroom = room;
+		User.find(myAuth).then(function() {
+			console.log(myAuth, room);
+			if (room.instructorId === myAuth) {
+				pullFromQueue();
+				vm.isStudent = false;
+				$scope.joined = true;
+			} else {
+				vm.isStudent = true;
+				if (!room.students) room.students = {};
+				if (room.students[myAuth]) $scope.joined = true;
+			}
+			$scope.loaded = true;
+			// $scope.$apply();
+		});
+	}
 
 
 	// setTimeout(function () {
 	// 	console.log($scope.user);
-	// 	console.log($scope.classroom);
+	// 	console.log(vm.classroom);
 	// }, 500);
 
-	$scope.addTopic = function (topic) {
-		if (!topic) topic = {};
-		topic.body = topic.body || "TEST TOPIC BODY";
-		if (!$scope.classroom.topicTrack) {
-			$scope.classroom.topicTrack = [];
+	vm.addTopic = addTopic;
+	vm.removeTopic = removeTopic;
+	vm.queueTopic = queueTopic;
+	vm.startLecture = startLecture;
+	vm.stopLecture = stopLecture;
+	vm.respond = respond;
+	vm.getResponse = getResponse;
+	vm.joinClassroom = joinClassroom;
+
+	function addTopic(topic) {
+		if (!topic) {
+			topic = {};
 		}
-		$scope.classroom.topicTrack.push(topic);
+		topic.body = topic.body || 'TEST TOPIC BODY';
+		if (!vm.classroom.topicTrack) {
+			vm.classroom.topicTrack = [];
+		}
+		vm.classroom.topicTrack.push(topic);
 		Classroom.save($stateParams.classroomId);
 	}
 
-	$scope.removeTopic = function (index) {
-		$scope.classroom.topicTrack.splice(index, 1);
+	function removeTopic(index) {
+		vm.classroom.topicTrack.splice(index, 1);
 		Classroom.save($stateParams.classroomId);
 	}
 
-	$scope.queueTopic = function (index) {
-		if (!$scope.classroom.topicQueue) $scope.classroom.topicQueue = [];
-		$scope.classroom.topicQueue.push($scope.classroom.topicTrack[index]);
-		$scope.classroom.topicTrack.splice(index, 1);
+	function queueTopic(index) {
+		if (!vm.classroom.topicQueue) {
+			vm.classroom.topicQueue = [];
+		}
+		vm.classroom.topicQueue.push(vm.classroom.topicTrack[index]);
+		vm.classroom.topicTrack.splice(index, 1);
 		Classroom.save($stateParams.classroomId);
 	}
 
 	function pullFromQueue() {
-		if (!$scope.classroom.topicQueue) return;
-		if (!$scope.classroom.topicTrack) $scope.classroom.topicTrack = [];
-		while ($scope.classroom.topicQueue.length) {
-			$scope.classroom.topicTrack.push($scope.classroom.topicQueue.shift());
+		if (!vm.classroom.topicQueue) {
+			return;
+		}
+		if (!vm.classroom.topicTrack) {
+			vm.classroom.topicTrack = [];
+		}
+		while (vm.classroom.topicQueue.length) {
+			vm.classroom.topicTrack.push(vm.classroom.topicQueue.shift());
 		}
 		Classroom.save($stateParams.classroomId);
 	}
 
-	$scope.startLecture = function () {
-		$scope.classroom.isLecturing = true;
+	function startLecture() {
+		vm.classroom.isLecturing = true;
 		Classroom.save($stateParams.classroomId);
 	}
 
-	$scope.stopLecture = function () {
-		$scope.classroom.isLecturing = false;
-		if (!$scope.classroom.topicQueue) $scope.classroom.topicQueue = [];
-		while ($scope.classroom.topicTrack.length) {
-			$scope.classroom.topicQueue.push($scope.classroom.topicTrack.shift());
+	function stopLecture() {
+		vm.classroom.isLecturing = false;
+		if (!vm.classroom.topicQueue) {
+			vm.classroom.topicQueue = [];
+		}
+		while (vm.classroom.topicTrack.length) {
+			vm.classroom.topicQueue.push(vm.classroom.topicTrack.shift());
 		}
 		Classroom.save($stateParams.classroomId);
 	}
 
-	$scope.respond = function (i, response) {
+	function respond(i, response) {
 		myResponse = response;
-		if (!$scope.classroom.topicTrack[i].response) $scope.classroom.topicTrack[i].response = {};
-		$scope.classroom.topicTrack[i].response[myAuth] = myResponse;
+		if (!vm.classroom.topicTrack[i].response) {
+			vm.classroom.topicTrack[i].response = {};
+		}
+		vm.classroom.topicTrack[i].response[myAuth] = myResponse;
 		Classroom.save($stateParams.classroomId);
 	}
 
-	$scope.getResponse = function (index, response) {
+	function getResponse(index, response) {
 		var out = 0;
-		for (var key in $scope.classroom.topicTrack[index].response) {
-			if ($scope.classroom.topicTrack[index].response[key] === response) out++;
+		for (var key in vm.classroom.topicTrack[index].response) {
+			if (vm.classroom.topicTrack[index].response[key] === response) {
+				out++;
+			}
 		}
 		return out;
-	};
+	}
 
-});
+	function joinClassroom(classroom) {
+		if (classroom.instructorId === myAuth) return;
+		classroom.students = classroom.students || {};
+		if (classroom.students[myAuth]) return;
+		classroom.students[myAuth] = myAuth;
+		Classroom.update(classroom.id, classroom).then(function(res) {
+			var myClass = res.id.split('');
+			myClass.shift();
+			myClass = myClass.join('');
+			User.find(myAuth).then(function(res2) {
+				var user = res2;
+				user.classrooms = user.classrooms || {};
+				user.classrooms[myClass] = myClass;
+				User.update(myAuth, user)
+					.then(function(res) {
+						console.log('suc', res);
+					})
+					.catch(function(res) {
+						console.log('err', res);
+					});
+				console.log('success', res);
+			})
+				.catch(function(res) {
+					console.log('err', res);
+				});
+		})
+			.catch(function(res) {
+				console.log('err', res);
+			});
+		$scope.joined = true;
+	}
+
+}

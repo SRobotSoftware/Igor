@@ -1,9 +1,6 @@
 {
   "name": "HelloIonic",
-  "private": "true",
-  "devDependencies": {
-    "ionic": "driftyco/ionic-bower#1.2.4"
-  },
+  "private": true,
   "resolutions": {
     "angular-ui-router": "^0.2.18"
   },

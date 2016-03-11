@@ -1,22 +1,31 @@
-app.controller('AuthController', function ($rootScope, $scope, AuthService) {
-	$scope.logout = AuthService.logout;
-	if (!$rootScope.authData) { AuthService.authMember(); }
-});
+angular
+	.module('Disco')
+	.controller('AuthController', AuthController);
 
-app.service('AuthService', function ($rootScope, $state, DSFirebaseAdapter, model) {
-	var User = model.user;
+function AuthController($rootScope, $scope, AuthService) {
 	var vm = this;
+	vm.logout = AuthService.logout;
+	if (!$rootScope.authData) { AuthService.authMember(); }
+}
 
-	vm.logout = function () {
+angular
+	.module('Disco')
+	.service('AuthService', AuthService);
+
+function AuthService($rootScope, $state, DSFirebaseAdapter, model) {
+		var User = model.user;
+		var vm = this;
+
+		vm.logout = function() {
 		DSFirebaseAdapter.ref.unauth();
 		$rootScope.authData = null;
 		$state.go('login');
 		console.log('LOGGED OUT');
-	}
+		};
 
-	vm.login = function (user) {
+		vm.login = function(user) {
 		console.log('LOGGING IN');
-		DSFirebaseAdapter.ref.authWithPassword(user, function (error, authData) {
+		DSFirebaseAdapter.ref.authWithPassword(user, function(error, authData) {
 			if (error) {
 				console.log("Login Failed!", error);
 			} else {
@@ -25,10 +34,10 @@ app.service('AuthService', function ($rootScope, $state, DSFirebaseAdapter, mode
 				$state.go('dashboard');
 			}
 		});
-	};
+		};
 
-	vm.register = function (user) {
-		DSFirebaseAdapter.ref.createUser(user, function (error, authData) {
+		vm.register = function(user) {
+		DSFirebaseAdapter.ref.createUser(user, function(error, authData) {
 			if (error) {
 				console.log('Registration Failed!', error);
 			} else {
@@ -38,20 +47,20 @@ app.service('AuthService', function ($rootScope, $state, DSFirebaseAdapter, mode
 					accountCreated: Date.now(),
 					id: authData.uid
 				})
-					.then(function (res) {
+					.then(function(res) {
 						console.log('success', res);
 						$state.go('dashboard');
 					})
-					.catch(function (res) {
+					.catch(function(res) {
 						console.log('err', res);
 					});
 			}
 		});
-	};
+		};
 
-	vm.authMember = function () {
+		vm.authMember = function() {
 		var authData = DSFirebaseAdapter.ref.getAuth();
 		if (authData) $rootScope.authData = authData;
-	};
+		};
 
-});
+}

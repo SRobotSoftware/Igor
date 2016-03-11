@@ -1,4 +1,6 @@
-app.config(function ($stateProvider, $urlRouterProvider) {
+angular
+	.module('Disco')
+	.config(function($stateProvider, $urlRouterProvider) {
 	$urlRouterProvider.otherwise('/login');
 
 	$stateProvider
@@ -6,6 +8,7 @@ app.config(function ($stateProvider, $urlRouterProvider) {
 			url: '/login',
 			templateUrl: 'app/components/login/login.html',
 			controller: 'LoginController',
+			controllerAs: 'lc'
 		})
 		.state('register', {
 			url: '/register',
@@ -14,16 +17,19 @@ app.config(function ($stateProvider, $urlRouterProvider) {
 		.state('dashboard', {
 			url: '/dashboard',
 			templateUrl: 'app/components/dashboard/dashboard.html',
-			controller: 'DashboardController'
+			controller: 'DashboardController',
+			controllerAs: 'dc'
 		})
 		.state('classroom', {
 			url: '/dashboard/:classroomId',
 			templateUrl: 'app/components/classroom/classroom.html',
-			controller: 'ClassroomController'
+			controller: 'ClassroomController',
+			controllerAs: 'cc'
 		})
 		.state('control', {
 			url: 'dashboard/control-panel',
 			templateUrl: 'app/components/control/control.html',
-			controller: 'ControlPanelController'
-		})
+			controller: 'ControlPanelController',
+			controllerAs: 'conc'
+		});
 });

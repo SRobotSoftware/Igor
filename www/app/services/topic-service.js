@@ -1,5 +1,9 @@
-app.factory('TopicService', function ($rootScope) {
+angular
+	.module('Disco')
+	.factory('TopicService', TopicService);
+
+function TopicService($rootScope) {
 
 
 
-});
+}
