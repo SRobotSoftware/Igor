@@ -6,16 +6,15 @@
 		</p>
 	</div>
 	<div class="panel panel-default" ng-show="loaded && !joined">
-		<div class="panel-heading">JOIN OR DIE</div>
+		<div class="panel-heading">Join this classroom!</div>
 		<div class="panel-body">
 			<button class="btn btn-primary btn-xs" ng-click="cc.joinClassroom(cc.classroom)">JOIN CLASSROOM</button>
-			<small>OR DIE</small>
 		</div>
 	</div>
 	<!--CONTENT-->
 	<div class="panel panel-default" ng-show="loaded && joined">
 		<div class="panel-heading">
-			{{cc.classroom.name}}
+			{{cc.classroom.name}} - <button class="btn btn-xs btn-primary" ng-click="cc.update();">UPDATE()</button>
 			<button class="btn btn-info btn-xs pull-right" ui-sref="dashboard">Back to Dashboard</button>
 		</div>
 		<div class="panel-body">
@@ -43,19 +42,30 @@
 					No Topics Currently Loaded <span ng-show="!cc.classroom.isLecturing">- Session has not started yet</span>
 				</div>
 				<div ng-show="!cc.isStudent || cc.classroom.isLecturing" class="well well-sm" ng-repeat="topic in cc.classroom.topicTrack track by $index">
-					{{topic.body}} - <span ng-show="!cc.isStudent" class="text-danger" ng-click="cc.removeTopic($index)">X</span>
-					<span ng-show="cc.isStudent">res:</span>
+					{{topic.body}} <span ng-show="!cc.isStudent" class="text-danger" ng-click="cc.removeTopic($index)">X</span>
 					<span ng-show="!cc.isStudent"> - Total Res: {{cc.myVars.topic[$index].stop+cc.myVars.topic[$index].slow+cc.myVars.topic[$index].go}}</span>
-					<button ng-show="cc.isStudent" class="col-xs-1 btn btn-danger btn-xs pull-right" ng-click="cc.respond($index, 'stop')"><i class="fa fa-inverse fa-ban"></i></button>
+					<button ng-show="cc.isStudent" class="col-xs-2 btn btn-danger btn-xs pull-right" ng-click="cc.respond($index, 'stop')"><i class="fa fa-inverse fa-ban"></i> Needs Explanation</button>
 					<div ng-show="!cc.isStudent" class="col-xs-1 text-danger pull-right"> {{cc.myVars.topic[$index].stop = cc.getResponse($index, 'stop')}} </div>
 					<div class="col-xs-1 pull-right"></div>
-					<button ng-show="cc.isStudent" class="col-xs-1 btn btn-warning btn-xs pull-right" ng-click="cc.respond($index, 'slow')"><i class="fa fa-exclamation-triangle"></i></button>
+					<button ng-show="cc.isStudent" class="col-xs-2 btn btn-warning btn-xs pull-right" ng-click="cc.respond($index, 'slow')"><i class="fa fa-exclamation-triangle"></i> Needs Review</button>
 					<div ng-show="!cc.isStudent" class="col-xs-1 text-warning pull-right"> {{cc.myVars.topic[$index].slow = cc.getResponse($index, 'slow')}} </div>
 					<div class="col-xs-1 pull-right"></div>
-					<button ng-show="cc.isStudent" class="col-xs-1 btn btn-success btn-xs pull-right" ng-click="cc.respond($index, 'go')"><i class="fa fa-arrow-circle-right"></i></button>
+					<button ng-show="cc.isStudent" class="col-xs-2 btn btn-success btn-xs pull-right" ng-click="cc.respond($index, 'go')"><i class="fa fa-arrow-circle-right"></i> Understood</button>
 					<div ng-show="!cc.isStudent" class="col-xs-1 text-success pull-right"> {{cc.myVars.topic[$index].go = cc.getResponse($index, 'go')}} </div>
 					<div ng-show="!cc.isStudent" class="col-xs-1 col-xs-1 pull-right"></div>
 					<button ng-show="!cc.isStudent" class="col-xs-1 btn btn-success btn-xs pull-right" ng-click="cc.queueTopic($index)"> Queue </button>
+				</div>
+			</div>
+			<!--Topic Queue-->
+			<div class="panel panel-default" ng-show="!cc.isStudent">
+				<div class="panel-heading">
+					Topic Queue:
+					<button class="btn btn-success btn-xs pull-right" ng-click="cc.pullFromQueue()">Add All</button>
+				</div>
+				<div class="panel-body">
+					<div class="well well-sm" ng-repeat="topic in cc.classroom.topicQueue track by $index">
+						{{topic.body}} - <span ng-show="!cc.isStudent" class="text-danger" ng-click="cc.removeTopicQ($index)">X</span> <button class="btn btn-success btn-xs" ng-click="cc.addToList($index)">Add to List</button>
+					</div>
 				</div>
 			</div>
 		</div>

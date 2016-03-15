@@ -4,15 +4,9 @@ angular
 
 function ClassroomController($rootScope, $scope, $stateParams, model) {
 
-	// THIS CONTROLLER NEEDS A HUGE REWRITE
-	// CREATE SCOPE VARIABLES FOR DISPLAY INFORMATION
-	// THINGS LIKE TOTAL NUMBER OF STUDENTS
-	// A MANIPULATABLE LOCAL TOPIC ARRAY
-	// TOTALS AND INDICATORS FOR TOPIC RESPONSES
-
 	var User = model.user;
 	var Classroom = model.classroom;
-		var myAuth;
+	var myAuth;
 	if ($rootScope.authData) {
 		myAuth = $rootScope.authData.uid;
 	} else {
@@ -22,13 +16,29 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 	var vm = this;
 	var myResponse = null;
 	$scope.joined = false;
+	Classroom.find(classId,{bypassCache: true}).then(load);
+	vm.addTopic = addTopic;
+	vm.removeTopic = removeTopic;
+	vm.removeTopicQ = removeTopicQ;
+	vm.queueTopic = queueTopic;
+	vm.startLecture = startLecture;
+	vm.stopLecture = stopLecture;
+	vm.respond = respond;
+	vm.getResponse = getResponse;
+	vm.joinClassroom = joinClassroom;
+	vm.addToList = addToList;
+	vm.pullFromQueue = pullFromQueue;
+	vm.update = update;
 
-	Classroom.find(classId).then(load);
+	function update() {
+		User.refreshAll({});
+		Classroom.refreshAll({});
+	}
 
 	function load(room) {
 		vm.isStudent = true;
 		vm.classroom = room;
-		User.find(myAuth).then(function() {
+		User.find(myAuth, {bypassCache: true}).then(function() {
 			console.log(myAuth, room);
 			if (room.instructorId === myAuth) {
 				pullFromQueue();
@@ -40,24 +50,14 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 				if (room.students[myAuth]) $scope.joined = true;
 			}
 			$scope.loaded = true;
-			// $scope.$apply();
 		});
 	}
 
-
-	// setTimeout(function () {
-	// 	console.log($scope.user);
-	// 	console.log(vm.classroom);
-	// }, 500);
-
-	vm.addTopic = addTopic;
-	vm.removeTopic = removeTopic;
-	vm.queueTopic = queueTopic;
-	vm.startLecture = startLecture;
-	vm.stopLecture = stopLecture;
-	vm.respond = respond;
-	vm.getResponse = getResponse;
-	vm.joinClassroom = joinClassroom;
+	function addToList(topic) {
+		vm.classroom.topicTrack.push(vm.classroom.topicQueue[topic]);
+		vm.classroom.topicQueue.splice(topic,1);
+		Classroom.save($stateParams.classroomId);
+	}
 
 	function addTopic(topic) {
 		if (!topic) {
@@ -73,6 +73,11 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 
 	function removeTopic(index) {
 		vm.classroom.topicTrack.splice(index, 1);
+		Classroom.save($stateParams.classroomId);
+	}
+
+	function removeTopicQ(index) {
+		vm.classroom.topicQueue.splice(index, 1);
 		Classroom.save($stateParams.classroomId);
 	}
 
@@ -142,7 +147,7 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 			var myClass = res.id.split('');
 			myClass.shift();
 			myClass = myClass.join('');
-			User.find(myAuth).then(function(res2) {
+			User.find(myAuth, {bypassCache: true}).then(function(res2) {
 				var user = res2;
 				user.classrooms = user.classrooms || {};
 				user.classrooms[myClass] = myClass;

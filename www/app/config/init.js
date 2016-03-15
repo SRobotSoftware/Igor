@@ -4,8 +4,8 @@ angular
 		'js-data',
 		'firebase',
 		'ngAnimate'
-		])
-		.config(function(DSFirebaseAdapterProvider, DSProvider) {
+	])
+	.config(function(DSFirebaseAdapterProvider, DSProvider) {
 		DSFirebaseAdapterProvider.defaults.basePath = 'https://discoapp.firebaseio.com';
 	})
 	.run(function($rootScope, DS, DSFirebaseAdapter, model) {
@@ -42,7 +42,7 @@ angular
 	.factory('model', model);
 
 function model(DS) {
-		return {
+	return {
 		user: DS.defineResource({
 			name: 'user',
 			endpoint: 'users',
@@ -73,5 +73,5 @@ function model(DS) {
 				}
 			}
 		})
-		};
+	};
 }
