@@ -29,6 +29,12 @@ angular
 					Resource.inject(data);
 				}
 			});
+			// ref.on('child_added', function(dataSnapshot) {
+			// 	var data = dataSnapshot.val();
+			// 	if (data[Resource.idAttribute]) {
+			// 		Resource.inject(data);
+			// 	}
+			// });
 			// Eject items from the store when they're removed from Firebase
 			ref.on('child_removed', function(dataSnapshot) {
 				var data = dataSnapshot.val();

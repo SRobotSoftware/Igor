@@ -16,7 +16,12 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 	var vm = this;
 	var myResponse = null;
 	$scope.joined = false;
-	Classroom.find(classId,{bypassCache: true}).then(load);
+	Classroom.find(classId, { bypassCache: true }).then(function(room) {
+		// debugger;
+		$scope.classroom = room;
+
+		load(room);
+	 });
 	vm.addTopic = addTopic;
 	vm.removeTopic = removeTopic;
 	vm.removeTopicQ = removeTopicQ;
@@ -37,8 +42,7 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 
 	function load(room) {
 		vm.isStudent = true;
-		vm.classroom = room;
-		User.find(myAuth, {bypassCache: true}).then(function() {
+		User.find(myAuth, { bypassCache: true }).then(function() {
 			console.log(myAuth, room);
 			if (room.instructorId === myAuth) {
 				pullFromQueue();
@@ -54,9 +58,9 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 	}
 
 	function addToList(topic) {
-		vm.classroom.topicTrack.push(vm.classroom.topicQueue[topic]);
-		vm.classroom.topicQueue.splice(topic,1);
-		Classroom.save($stateParams.classroomId);
+		$scope.classroom.topicTrack.push($scope.classroom.topicQueue[topic]);
+		$scope.classroom.topicQueue.splice(topic, 1);
+		$scope.classroom.DSSave();
 	}
 
 	function addTopic(topic) {
@@ -64,74 +68,75 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 			topic = {};
 		}
 		topic.body = topic.body || 'TEST TOPIC BODY';
-		if (!vm.classroom.topicTrack) {
-			vm.classroom.topicTrack = [];
+		if (!$scope.classroom.topicTrack) {
+			$scope.classroom.topicTrack = [];
 		}
-		vm.classroom.topicTrack.push(topic);
-		Classroom.save($stateParams.classroomId);
+		$scope.classroom.topicTrack.push(topic);
+		$scope.classroom.DSSave();
 	}
 
 	function removeTopic(index) {
-		vm.classroom.topicTrack.splice(index, 1);
-		Classroom.save($stateParams.classroomId);
+		$scope.classroom.topicTrack.splice(index, 1);
+		$scope.classroom.DSSave();
 	}
 
 	function removeTopicQ(index) {
-		vm.classroom.topicQueue.splice(index, 1);
-		Classroom.save($stateParams.classroomId);
+		$scope.classroom.topicQueue.splice(index, 1);
+		$scope.classroom.DSSave();
 	}
 
 	function queueTopic(index) {
-		if (!vm.classroom.topicQueue) {
-			vm.classroom.topicQueue = [];
+		if (!$scope.classroom.topicQueue) {
+			$scope.classroom.topicQueue = [];
 		}
-		vm.classroom.topicQueue.push(vm.classroom.topicTrack[index]);
-		vm.classroom.topicTrack.splice(index, 1);
-		Classroom.save($stateParams.classroomId);
+		$scope.classroom.topicQueue.push($scope.classroom.topicTrack[index]);
+		$scope.classroom.topicTrack.splice(index, 1);
+		$scope.classroom.DSSave();
 	}
 
 	function pullFromQueue() {
-		if (!vm.classroom.topicQueue) {
+		if (!$scope.classroom.topicQueue) {
 			return;
 		}
-		if (!vm.classroom.topicTrack) {
-			vm.classroom.topicTrack = [];
+		if (!$scope.classroom.topicTrack) {
+			$scope.classroom.topicTrack = [];
 		}
-		while (vm.classroom.topicQueue.length) {
-			vm.classroom.topicTrack.push(vm.classroom.topicQueue.shift());
+		while ($scope.classroom.topicQueue.length) {
+			$scope.classroom.topicTrack.push($scope.classroom.topicQueue.shift());
 		}
-		Classroom.save($stateParams.classroomId);
+		$scope.classroom.DSSave();
 	}
 
 	function startLecture() {
-		vm.classroom.isLecturing = true;
-		Classroom.save($stateParams.classroomId);
+		$scope.classroom.isLecturing = true;
+		$scope.classroom.DSSave();
+		// $scope.classroom.DSSave();
 	}
 
 	function stopLecture() {
-		vm.classroom.isLecturing = false;
-		if (!vm.classroom.topicQueue) {
-			vm.classroom.topicQueue = [];
+		$scope.classroom.isLecturing = false;
+		if (!$scope.classroom.topicQueue) {
+			$scope.classroom.topicQueue = [];
 		}
-		while (vm.classroom.topicTrack.length) {
-			vm.classroom.topicQueue.push(vm.classroom.topicTrack.shift());
+		while ($scope.classroom.topicTrack.length) {
+			$scope.classroom.topicQueue.push($scope.classroom.topicTrack.shift());
 		}
-		Classroom.save($stateParams.classroomId);
+		$scope.classroom.DSSave();
 	}
 
 	function respond(i, response) {
 		myResponse = response;
-		if (!vm.classroom.topicTrack[i].response) {
-			vm.classroom.topicTrack[i].response = {};
+		if (!$scope.classroom.topicTrack[i].response) {
+			$scope.classroom.topicTrack[i].response = {};
 		}
-		vm.classroom.topicTrack[i].response[myAuth] = myResponse;
-		Classroom.save($stateParams.classroomId);
+		$scope.classroom.topicTrack[i].response[myAuth] = myResponse;
+		$scope.classroom.DSSave();
 	}
 
 	function getResponse(index, response) {
 		var out = 0;
-		for (var key in vm.classroom.topicTrack[index].response) {
-			if (vm.classroom.topicTrack[index].response[key] === response) {
+		for (var key in $scope.classroom.topicTrack[index].response) {
+			if ($scope.classroom.topicTrack[index].response[key] === response) {
 				out++;
 			}
 		}
@@ -147,7 +152,7 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 			var myClass = res.id.split('');
 			myClass.shift();
 			myClass = myClass.join('');
-			User.find(myAuth, {bypassCache: true}).then(function(res2) {
+			User.find(myAuth, { bypassCache: true }).then(function(res2) {
 				var user = res2;
 				user.classrooms = user.classrooms || {};
 				user.classrooms[myClass] = myClass;

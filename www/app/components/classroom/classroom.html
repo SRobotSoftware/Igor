@@ -8,19 +8,19 @@
 	<div class="panel panel-default" ng-show="loaded && !joined">
 		<div class="panel-heading">Join this classroom!</div>
 		<div class="panel-body">
-			<button class="btn btn-primary btn-xs" ng-click="cc.joinClassroom(cc.classroom)">JOIN CLASSROOM</button>
+			<button class="btn btn-primary btn-xs" ng-click="cc.joinClassroom(classroom)">JOIN CLASSROOM</button>
 		</div>
 	</div>
 	<!--CONTENT-->
 	<div class="panel panel-default" ng-show="loaded && joined">
 		<div class="panel-heading">
-			{{cc.classroom.name}} - <button class="btn btn-xs btn-primary" ng-click="cc.update();">UPDATE()</button>
+			{{classroom.name}} - <button class="btn btn-xs btn-primary" ng-click="cc.update();">UPDATE()</button>
 			<button class="btn btn-info btn-xs pull-right" ui-sref="dashboard">Back to Dashboard</button>
 		</div>
 		<div class="panel-body">
 			<div class="panel panel-default">
 				<div class="panel-body">
-					{{cc.classroom.description}}
+					{{classroom.description}}
 				</div>
 			</div>
 			<!--Topic Track-->
@@ -38,10 +38,10 @@
 					<button class="btn btn-danger pull-right" ng-click="cc.stopLecture()">End Lecture</button>
 					<button class="btn btn-success pull-right" ng-click="cc.startLecture()">Start Lecture</button>
 				</div>
-				<div class="panel-body" ng-show="!cc.classroom.topicTrack || !cc.classroom.isLecturing && cc.isStudent">
-					No Topics Currently Loaded <span ng-show="!cc.classroom.isLecturing">- Session has not started yet</span>
+				<div class="panel-body" ng-show="!classroom.topicTrack || !classroom.isLecturing && cc.isStudent">
+					No Topics Currently Loaded <span ng-show="!classroom.isLecturing">- Session has not started yet</span>
 				</div>
-				<div ng-show="!cc.isStudent || cc.classroom.isLecturing" class="well well-sm" ng-repeat="topic in cc.classroom.topicTrack track by $index">
+				<div ng-show="!cc.isStudent || classroom.isLecturing" class="well well-sm" ng-repeat="topic in classroom.topicTrack track by $index">
 					{{topic.body}} <span ng-show="!cc.isStudent" class="text-danger" ng-click="cc.removeTopic($index)">X</span>
 					<span ng-show="!cc.isStudent"> - Total Res: {{cc.myVars.topic[$index].stop+cc.myVars.topic[$index].slow+cc.myVars.topic[$index].go}}</span>
 					<button ng-show="cc.isStudent" class="col-xs-2 btn btn-danger btn-xs pull-right" ng-click="cc.respond($index, 'stop')"><i class="fa fa-inverse fa-ban"></i> Needs Explanation</button>
@@ -63,7 +63,7 @@
 					<button class="btn btn-success btn-xs pull-right" ng-click="cc.pullFromQueue()">Add All</button>
 				</div>
 				<div class="panel-body">
-					<div class="well well-sm" ng-repeat="topic in cc.classroom.topicQueue track by $index">
+					<div class="well well-sm" ng-repeat="topic in classroom.topicQueue track by $index">
 						{{topic.body}} - <span ng-show="!cc.isStudent" class="text-danger" ng-click="cc.removeTopicQ($index)">X</span> <button class="btn btn-success btn-xs" ng-click="cc.addToList($index)">Add to List</button>
 					</div>
 				</div>
