@@ -2,7 +2,7 @@ angular
 	.module('Disco')
 	.controller('ClassroomController', ClassroomController);
 
-function ClassroomController($rootScope, $scope, $stateParams, model) {
+function ClassroomController($rootScope, $scope, $stateParams, model, DS) {
 
 	var User = model.user;
 	var Classroom = model.classroom;
@@ -17,9 +17,10 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 	var myResponse = null;
 	$scope.joined = false;
 	Classroom.find(classId, { bypassCache: true }).then(function(room) {
+		Classroom.bindAll({}, $scope, "classrooms");
 		// debugger;
 		$scope.classroom = room;
-
+		debugger;
 		load(room);
 	 });
 	vm.addTopic = addTopic;
@@ -33,12 +34,6 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 	vm.joinClassroom = joinClassroom;
 	vm.addToList = addToList;
 	vm.pullFromQueue = pullFromQueue;
-	vm.update = update;
-
-	function update() {
-		User.refreshAll({});
-		Classroom.refreshAll({});
-	}
 
 	function load(room) {
 		vm.isStudent = true;
@@ -76,6 +71,11 @@ function ClassroomController($rootScope, $scope, $stateParams, model) {
 	}
 
 	function removeTopic(index) {
+
+		// delete $scope.classroom.topicTrack[index];
+		// Classroom.DSSave();
+		// var options = { endpoint: "topicTrack" };
+		// Classroom.destroy(index, options).then(function(res) { console.log(res);}).catch(function(res) { console.log(res);});
 		$scope.classroom.topicTrack.splice(index, 1);
 		$scope.classroom.DSSave();
 	}

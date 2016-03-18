@@ -14,9 +14,9 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 	}
 	var vm = this;
 
-	vm.classrooms = findClassrooms(myAuth);
+	vm.classrooms = findClassrooms(myAuth,{ bypassCache: true });
 
-	User.findAll();
+	User.findAll({ bypassCache: true });
 	User.bindAll({}, $scope, 'users');
 
 	vm.createClassroom = createClassroom;
@@ -30,7 +30,7 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 
 	// Displays a link with the proper URL for a given classroom
 	function displayLink(room) {
-		var out = 'http://localhost:8080/#/dashboard' + room.id;
+		var out = 'http://giskard.us/#/dashboard' + room.id;
 		return out;
 	}
 
@@ -42,9 +42,9 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 	// Finds all Classrooms the user participates in
 	function findClassrooms(user) {
 		var result = [];
-		User.find(user).then(function(thisUser) {
+		User.find(user,{ bypassCache: true }).then(function(thisUser) {
 			for (var classroom in thisUser.classrooms) {
-				Classroom.find(classroom).then(function(res) { result.push(res); });
+				Classroom.find(classroom,{ bypassCache: true }).then(function(res) { result.push(res); });
 			}
 		});
 		$scope.loaded = true;
@@ -64,7 +64,7 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 			description: newClassroom.description
 		})
 			.then(function(res) {
-				User.find(myAuth).then(function(res2) {
+				User.find(myAuth,{ bypassCache: true }).then(function(res2) {
 					var user = res2;
 					var myClass = res.id.split('');
 					myClass.shift();
@@ -88,7 +88,7 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 			var myClass = res.id.split('');
 			myClass.shift();
 			myClass = myClass.join('');
-			User.find(myAuth).then(function(res2) {
+			User.find(myAuth,{ bypassCache: true }).then(function(res2) {
 				var user = res2;
 				user.classrooms = user.classrooms || {};
 				user.classrooms[myClass] = myClass;
@@ -145,6 +145,7 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 		myClass.shift();
 		myClass = myClass.join('');
 		// Remove class from local scope
+		user.classroom.destroy(myClass);
 		user.classrooms[myClass] = null;
 		// Update the DS
 		// User.update(user.id, user)
@@ -157,6 +158,7 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 		for (var i = 0; i < vm.classrooms.length; i++) {
 			if (vm.classrooms[i] === classToTarget) {
 				if (vm.classrooms[i].students) {
+					vm.classrooms[i].students.destroy(userToRemove);
 					vm.classrooms[i].students[userToRemove] = null;
 				}
 			}

@@ -26,6 +26,7 @@ angular
 			ref.on('child_changed', function(dataSnapshot) {
 				var data = dataSnapshot.val();
 				if (data[Resource.idAttribute]) {
+					// Resource.eject(data.id);
 					Resource.inject(data);
 				}
 			});
@@ -37,6 +38,7 @@ angular
 			// });
 			// Eject items from the store when they're removed from Firebase
 			ref.on('child_removed', function(dataSnapshot) {
+				debugger;
 				var data = dataSnapshot.val();
 				if (data[Resource.idAttribute]) {
 					Resource.eject(data[Resource.idAttribute]);

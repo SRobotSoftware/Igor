@@ -14,13 +14,13 @@
 	<!--CONTENT-->
 	<div class="panel panel-default" ng-show="loaded && joined">
 		<div class="panel-heading">
-			{{classroom.name}} - <button class="btn btn-xs btn-primary" ng-click="cc.update();">UPDATE()</button>
+			{{classroom.name}} <span ng-if="!cc.isStudent">- isLecturing: {{classroom.isLecturing}}</span>
 			<button class="btn btn-info btn-xs pull-right" ui-sref="dashboard">Back to Dashboard</button>
 		</div>
 		<div class="panel-body">
 			<div class="panel panel-default">
 				<div class="panel-body">
-					{{classroom.description}}
+					{{classroom.description}} ||| {{classroom}}
 				</div>
 			</div>
 			<!--Topic Track-->
