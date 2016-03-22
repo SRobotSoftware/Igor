@@ -39,6 +39,7 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 					classrooms.$loaded()
 						.then(function(x) {
 							findClassrooms();
+							console.log("Classrooms Found");
 						});
 				}
 			}, this);
@@ -48,7 +49,7 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 
 	// Displays a link with the proper URL for a given classroom
 	function displayLink(room) {
-		var out = 'http://giskard.us/#/dashboard' + room.id;
+		var out = 'http://giskard.us/#/dashboard/' + room.$id;
 		return out;
 	}
 
@@ -100,37 +101,22 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 
 	// Join classroom
 	function joinClassroom(classroom) {
-		if (classroom.instructorId === myAuth) {
+		if (classroom.instructorId === myself.id) {
 			return;
 		}
-		classroom.students = classroom.students || {};
-		classroom.students[myAuth] = myAuth;
-		Classroom.update(classroom.id, classroom).then(function(res) {
-			var myClass = res.id.split('');
-			myClass.shift();
-			myClass = myClass.join('');
-			User.find(myAuth, {
-				bypassCache: true
-			}).then(function(res2) {
-				var user = res2;
-				user.classrooms = user.classrooms || {};
-				user.classrooms[myClass] = myClass;
-				User.update(myAuth, user);
-			});
-		});
+		myself.classes.push(classroom.$id);
+		classrooms.students.push(myself.id);
+		users.$save(myself);
+		classrooms.$save(classroom);
 	}
 
 	// Destroy classroom
 	function removeClassroom(classroom) {
-		console.log(classroom);
 		// If there's any students, remove the classroom from their list as well
 		if (classroom.students.length) {
-			// loop through students
-			for (var i = 0; i < Object.keys(classroom.students).length; i++) {
-				console.log(Object.keys(classroom.students));
-				var current = Object.keys(classroom.students)[i];
-				removeClassFromUser(current, classroom);
-			}
+			classroom.students.forEach(function(student) {
+				removeClassFromUser(student, classroom);
+			}, this);
 		}
 		removeClassFromUser(myself, classroom);
 		// removeClassFromUser(classroom.instructorId, classroom);
@@ -142,9 +128,9 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 
 	// Remove classroom from list
 	function leaveClassroom(classroom) {
-		removeUserFromClass(classroom, myAuth);
-		removeClassFromUser(myAuth, classroom);
-		vm.classrooms = findClassrooms(myAuth);
+		removeUserFromClass(classroom, myself);
+		removeClassFromUser(myself, classroom);
+		findClassrooms(myself);
 	}
 
 	// Convert uid to Name or Email or err
@@ -170,14 +156,12 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 
 	// Remove user reference from classroom
 	function removeUserFromClass(classToTarget, userToRemove) {
-		for (var i = 0; i < vm.classrooms.length; i++) {
-			if (vm.classrooms[i] === classToTarget) {
-				if (vm.classrooms[i].students) {
-					vm.classrooms[i].students.destroy(userToRemove);
-					vm.classrooms[i].students[userToRemove] = null;
-				}
+		debugger;
+		for (var i = 0; i < classToTarget.students.length; i++) {
+			if (classToTarget.students[i] === userToRemove) {
+				classToTarget.students[i] = null;
 			}
 		}
-		Classroom.save(classToTarget);
+		classrooms.$save(classToTarget);
 	}
 }
