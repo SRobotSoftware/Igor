@@ -11,7 +11,6 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 
 	// Scoped Vars
 	vm.createClassroom = createClassroom;
-	vm.joinClassroom = joinClassroom;
 	vm.removeClassroom = removeClassroom;
 	vm.removeClassroom = removeClassroom;
 	vm.leaveClassroom = leaveClassroom;
@@ -40,6 +39,10 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 						.then(function(x) {
 							findClassrooms();
 							console.log("Classrooms Found");
+						})
+						.catch(function(x) {
+							console.log("Classrooms not found");
+							console.log(x);
 						});
 				}
 			}, this);
@@ -63,10 +66,14 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 		var result = [];
 		classrooms.forEach(function(element) {
 			if (!element.students) element.students = [];
-			if (element.instructorId === myself.id || element.students[myself.id]) result.push(element);
+			if (element.instructorId === myself.id) {
+				result.push(element);
+			} else {
+				if (element.students[myself.id]) result.push(element);
+			}
 		}, this);
-		$scope.loaded = true;
 		$scope.classrooms = result;
+		$scope.loaded = true;
 	}
 
 	// Create Classroom
@@ -79,16 +86,17 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 		classrooms.$add({
 			instructorId: myself.id,
 			name: newClassroom.name,
-			description: newClassroom.description
+			description: newClassroom.description,
+			isLecturing: false
 		})
 			.then(function(res) {
 				console.log("Added class successfully");
 				console.log(res.path.u[1]);
 				if (myself.classes) {
-					myself.classes.push(res.path.u[1]);
+					myself.classes[res.path.u[1]] = res.path.u[1];
 				} else {
-					myself.classes = [];
-					myself.classes.push(res.path.u[1]);
+					myself.classes = {};
+					myself.classes[res.path.u[1]] = res.path.u[1];
 				}
 				users.$save(myself);
 				findClassrooms();
@@ -99,21 +107,12 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 			});
 	}
 
-	// Join classroom
-	function joinClassroom(classroom) {
-		if (classroom.instructorId === myself.id) {
-			return;
-		}
-		myself.classes.push(classroom.$id);
-		classrooms.students.push(myself.id);
-		users.$save(myself);
-		classrooms.$save(classroom);
-	}
-
 	// Destroy classroom
 	function removeClassroom(classroom) {
 		// If there's any students, remove the classroom from their list as well
 		if (classroom.students.length) {
+			debugger;
+			// FIX FOR OBJECT
 			classroom.students.forEach(function(student) {
 				removeClassFromUser(student, classroom);
 			}, this);
@@ -146,22 +145,14 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 
 	// Removes classroom reference from user
 	function removeClassFromUser(userToTarget, classToRemove) {
-		for (var i = 0; i < userToTarget.classes.length; i++) {
-			if (userToTarget.classes[i] === classToRemove.$id) {
-				userToTarget.classes[i] = null;
-			}
-		}
+		userToTarget.classes[classToRemove.$id] = null;
 		users.$save(userToTarget);
 	}
 
 	// Remove user reference from classroom
 	function removeUserFromClass(classToTarget, userToRemove) {
 		debugger;
-		for (var i = 0; i < classToTarget.students.length; i++) {
-			if (classToTarget.students[i] === userToRemove) {
-				classToTarget.students[i] = null;
-			}
-		}
+		classToTarget.students[userToRemove.id] = null;
 		classrooms.$save(classToTarget);
 	}
 }

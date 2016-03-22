@@ -5,9 +5,6 @@ angular
 function AuthController($rootScope, $scope, AuthService) {
 	var vm = this;
 	vm.logout = AuthService.logout;
-	if (!$rootScope.authData) {
-		AuthService.authMember();
-	}
 }
 
 angular

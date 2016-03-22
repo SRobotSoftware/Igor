@@ -25,11 +25,5 @@ angular
 			templateUrl: 'app/components/classroom/classroom.html',
 			controller: 'ClassroomController',
 			controllerAs: 'cc'
-		})
-		.state('control', {
-			url: 'dashboard/control-panel',
-			templateUrl: 'app/components/control/control.html',
-			controller: 'ControlPanelController',
-			controllerAs: 'conc'
 		});
 });

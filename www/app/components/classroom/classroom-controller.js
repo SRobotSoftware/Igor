@@ -2,7 +2,7 @@ angular
 	.module('Disco')
 	.controller('ClassroomController', ClassroomController);
 
-function ClassroomController($rootScope, $scope, $stateParams, users, classrooms) {
+function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $state, users, classrooms) {
 
 	// Local Vars
 	var vm = this;
@@ -11,6 +11,8 @@ function ClassroomController($rootScope, $scope, $stateParams, users, classrooms
 	var myself;
 
 	// Scoped Vars
+	$scope.myTopics = $firebaseArray(new Firebase("https://discoapp.firebaseio.com/classrooms/" + classId + "/topics"));
+	$scope.isStudent = true;
 	vm.addTopic = addTopic;
 	vm.removeTopic = removeTopic;
 	vm.moveTopic = moveTopic;
@@ -45,13 +47,13 @@ function ClassroomController($rootScope, $scope, $stateParams, users, classrooms
 								if (element.$id === classId) {
 									$scope.myRoom = element;
 									console.log("Classroom Found");
-									myself.classes.forEach(function(element) {
-										if (element === classId) {
-											console.log("User is part of class");
-											$scope.joined = true;
-										}
-									}, this);
+									if (!myself.classes) myself.classes = {};
+									if (myself.classes[classId]) {
+										console.log("User is part of class");
+										$scope.joined = true;
+									}
 									$scope.loaded = true;
+									if (myself.id === $scope.myRoom.instructorId) $scope.isStudent = false;
 								}
 							}, this);
 						});
@@ -61,59 +63,45 @@ function ClassroomController($rootScope, $scope, $stateParams, users, classrooms
 		});
 	}
 
-	// OLD STUFF
-	// if ($rootScope.authData) {
-	// 	myAuth = $rootScope.authData.uid;
-	// } else {
-	// 	$state.go('login');
-	// }
-	// Topics.findAll({ classroomId: classId }).then(function(x) {
-	// 	var foobar = "classrooms"+classId+"/topics/";
-	// 	Topics.create({ body: 'WooT!', classroomId: classId }, { endpoint: foobar });
-	// });
-	// $scope.joined = false;
-	// Classroom.find(classId, { bypassCache: true }).then(function(room) {
-	// 	// Classroom.bindAll({}, $scope, "classrooms");
-	// 	$scope.classroom = room;
-	// 	// debugger;
-	// 	load(room);
-	//  });
-
 	// move topic from queue to track or track to queue
 	function moveTopic(topic) {
-
+		var myTopic = $scope.myTopics.$indexFor(topic);
+		$scope.myTopics[myTopic].track = !$scope.myTopics[myTopic].track;
+		$scope.myTopics.$save(myTopic);
 	}
 
 	// Add topic to track
 	function addTopic(topic) {
-		if (!topic) {
-			topic = {};
-		}
-		topic.body = topic.body || 'TEST TOPIC BODY';
-		if (!$scope.classroom.topicTrack) {
-			$scope.classroom.topicTrack = {};
-		}
-
+		if (!topic) topic = {};
+		topic.body = topic.body || 'EXAMPLE TOPIC BODY';
+		topic.track = true;
+		$scope.myTopics.$add(topic);
 	}
 
-	// Removes topic from db, regardless of if in track or queue
-	function removeTopic(index) {
-
+	// Removes topic from db
+	function removeTopic(topic) {
+		$scope.myTopics.$remove($scope.myTopics.$indexFor(topic));
 	}
 
 	// Move all items from queue to track
 	function pullFromQueue() {
-
+		$scope.myTopics.forEach(function(element) {
+			element.track = true;
+			$scope.myTopics.$save(element);
+		}, this);
 	}
 
 	// Start lecture
 	function startLecture() {
-		$scope.classroom.isLecturing = true;
+		$scope.myRoom.isLecturing = true;
+		classrooms.$save($scope.myRoom);
 	}
 
 	// Stop lecture, move topics from track to queue
 	function stopLecture() {
-		$scope.classroom.isLecturing = false;
+		$scope.myRoom.isLecturing = false;
+		classrooms.$save($scope.myRoom);
+		pullFromQueue();
 	}
 
 	// Add student response to db
@@ -131,10 +119,15 @@ function ClassroomController($rootScope, $scope, $stateParams, users, classrooms
 		if (classroom.instructorId === myself.id) {
 			return;
 		}
-		myself.classes.push(classroom.$id);
-		classrooms.students.push(myself.id);
+		console.log("joining classroom");
+		if (!myself.classes) myself.classes = {};
+		myself.classes[classId] = classId;
+		if (!classroom.students) classroom.students = {};
+		classroom.students[myself.id] = myself.id;
 		users.$save(myself);
 		classrooms.$save(classroom);
+		$scope.joined = true;
+		$state.reload();
 	}
 
 }
