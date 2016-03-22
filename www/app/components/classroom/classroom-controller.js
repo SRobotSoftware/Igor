@@ -6,6 +6,8 @@ function ClassroomController($rootScope, $scope, $stateParams, model, DS) {
 
 	var User = model.user;
 	var Classroom = model.classroom;
+	var Topics = model.topics;
+
 	var myAuth;
 	if ($rootScope.authData) {
 		myAuth = $rootScope.authData.uid;
@@ -15,12 +17,15 @@ function ClassroomController($rootScope, $scope, $stateParams, model, DS) {
 	var classId = $stateParams.classroomId;
 	var vm = this;
 	var myResponse = null;
+	Topics.findAll({ classroomId: classId }).then(function(x) {
+		var foobar = "classrooms"+classId+"/topics/";
+		Topics.create({ body: 'WooT!', classroomId: classId }, { endpoint: foobar });
+	});
 	$scope.joined = false;
 	Classroom.find(classId, { bypassCache: true }).then(function(room) {
-		Classroom.bindAll({}, $scope, "classrooms");
-		// debugger;
+		// Classroom.bindAll({}, $scope, "classrooms");
 		$scope.classroom = room;
-		debugger;
+		// debugger;
 		load(room);
 	 });
 	vm.addTopic = addTopic;
@@ -64,14 +69,15 @@ function ClassroomController($rootScope, $scope, $stateParams, model, DS) {
 		}
 		topic.body = topic.body || 'TEST TOPIC BODY';
 		if (!$scope.classroom.topicTrack) {
-			$scope.classroom.topicTrack = [];
+			$scope.classroom.topicTrack = {};
 		}
-		$scope.classroom.topicTrack.push(topic);
+		// Need to access an object instead of an array
+		$scope.classroom.topicTrack.create(topic).then(function(res) { console.log(res); }).catch(function(res) { console.log(res);});
+		// $scope.classroom.topicTrack.push(topic);
 		$scope.classroom.DSSave();
 	}
 
 	function removeTopic(index) {
-
 		// delete $scope.classroom.topicTrack[index];
 		// Classroom.DSSave();
 		// var options = { endpoint: "topicTrack" };

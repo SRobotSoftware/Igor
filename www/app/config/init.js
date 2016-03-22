@@ -1,85 +1,28 @@
 angular
 	.module('Disco', [
 		'ui.router',
-		'js-data',
 		'firebase',
-		'ngAnimate'
 	])
-	.config(function(DSFirebaseAdapterProvider, DSProvider) {
-		DSFirebaseAdapterProvider.defaults.basePath = 'https://discoapp.firebaseio.com';
-	})
-	.run(function($rootScope, DS, DSFirebaseAdapter, model) {
-
-		DS.registerAdapter('firebase',
-			DSFirebaseAdapter, {
-				default: true,
-			});
-
-		// Activate a mostly auto-sync with Firebase
-		// The only thing missing is auto-sync TO Firebase
-		// This will be easier with js-data 2.x, but right
-		// now you still have to do DS.update('user', 1, { foo: 'bar' }), etc.
-		angular.forEach(model, function(Resource) {
-			var ref = DSFirebaseAdapter.ref.child(Resource.endpoint);
-			// Inject items into the store when they're added to Firebase
-			// Update items in the store when they're modified in Firebase
-			ref.on('child_changed', function(dataSnapshot) {
-				var data = dataSnapshot.val();
-				if (data[Resource.idAttribute]) {
-					// Resource.eject(data.id);
-					Resource.inject(data);
-				}
-			});
-			// ref.on('child_added', function(dataSnapshot) {
-			// 	var data = dataSnapshot.val();
-			// 	if (data[Resource.idAttribute]) {
-			// 		Resource.inject(data);
-			// 	}
-			// });
-			// Eject items from the store when they're removed from Firebase
-			ref.on('child_removed', function(dataSnapshot) {
-				debugger;
-				var data = dataSnapshot.val();
-				if (data[Resource.idAttribute]) {
-					Resource.eject(data[Resource.idAttribute]);
-				}
-			});
-		});
+	.config(function() {
 
 	})
-	.factory('model', model);
+	.run(function() {
+		// var ref = new Firebase(CONSTANTS.fbRef);
+		// ref.on("value", function(snapshot) {
+		// 	$scope.$apply(function() {
+		// 		$scope.data = snapshot.val();
+		// 	});
+		// });
+	})
+	.factory('users', ["$firebaseArray", users])
+	.factory('classrooms', ["$firebaseArray", classrooms]);
 
-function model(DS) {
-	return {
-		user: DS.defineResource({
-			name: 'user',
-			endpoint: 'users',
-			relations: {
-				hasMany: {
-					classrooms: {
-						localField: 'classroom',
-						foreignKey: 'classroomId'
-					}
-				}
-			}
-		}),
-		classroom: DS.defineResource({
-			name: 'classroom',
-			endpoint: 'classrooms',
-			relations: {
-				belongsTo: {
-					user: {
-						localField: 'instructor',
-						foreignKey: 'instructorId'
-					}
-				},
-				hasMany: {
-					users: {
-						localField: 'student',
-						foreignKey: 'studentId'
-					}
-				}
-			}
-		})
-	};
+function users($firebaseArray) {
+	var ref = new Firebase("https://discoapp.firebaseio.com/users");
+	return $firebaseArray(ref);
+}
+
+function classrooms($firebaseArray) {
+	var ref = new Firebase("https://discoapp.firebaseio.com/classrooms");
+	return $firebaseArray(ref);
 }

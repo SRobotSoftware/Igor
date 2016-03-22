@@ -13,7 +13,7 @@
 		<form class="form-inline" ng-submit="dc.createClassroom(newClassroom); newClassroom={};">
 			<div class="form-group">
 				<label>Room Name:</label>
-				<input class="form-control" type="text" ng-model="newClassroom.name" placeholder="{{dc.convertUser(authData.uid)}}'s Classroom">
+				<input class="form-control" type="text" ng-model="newClassroom.name" placeholder="FIXME's Classroom">
 			</div>
 			<div class="form-group">
 				<label>Room Description:</label>
@@ -26,7 +26,7 @@
 		Your Classrooms:
 	</div>
 	<div class="panel-body">
-		<div class="panel panel-default" ng-show="!room.show" ng-repeat="room in dc.classrooms track by room.id">
+		<div class="panel panel-default" ng-repeat="room in classrooms track by $index">
 			<div class="panel-heading">
 				<div>
 					Classroom: {{room.name}}<span ng-if="dc.isInstructor(room)"> - Link: <input type="text" onclick="this.focus();this.select()" value="{{dc.displayLink(room)}}" readonly="readonly"></input></span>

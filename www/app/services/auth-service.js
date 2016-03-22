@@ -5,62 +5,66 @@ angular
 function AuthController($rootScope, $scope, AuthService) {
 	var vm = this;
 	vm.logout = AuthService.logout;
-	if (!$rootScope.authData) { AuthService.authMember(); }
+	if (!$rootScope.authData) {
+		AuthService.authMember();
+	}
 }
 
 angular
 	.module('Disco')
 	.service('AuthService', AuthService);
 
-function AuthService($rootScope, $state, DSFirebaseAdapter, model) {
-		var User = model.user;
-		var vm = this;
+function AuthService($rootScope, $state, $firebaseAuth, users) {
+	var vm = this;
+	var ref = new Firebase("https://discoapp.firebaseio.com");
 
-		vm.logout = function() {
-		DSFirebaseAdapter.ref.unauth();
-		$rootScope.authData = null;
-		$state.go('login');
+	vm.logout = logout;
+	vm.login = login;
+	vm.register = register;
+	$rootScope.authData = $firebaseAuth(ref);
+
+	function logout() {
+		$rootScope.authData.$unauth();
 		console.log('LOGGED OUT');
-		};
+		$state.go('login');
+	}
 
-		vm.login = function(user) {
+	function login(user) {
 		console.log('LOGGING IN');
-		DSFirebaseAdapter.ref.authWithPassword(user, function(error, authData) {
-			if (error) {
-				console.log("Login Failed!", error);
-			} else {
-				console.log("Authenticated successfully with payload:", authData);
-				$rootScope.authData = authData;
-				$state.go('dashboard');
-			}
-		});
-		};
+		$rootScope.authData.$authWithPassword(user)
+			.then(function(res) {
+				console.log("User logged in");
+				console.log(res);
+				$state.go("dashboard");
+			})
+			.catch(function(res) {
+				console.log("User did not log in");
+				console.log(res);
+			});
+	}
 
-		vm.register = function(user) {
-		DSFirebaseAdapter.ref.createUser(user, function(error, authData) {
-			if (error) {
-				console.log('Registration Failed!', error);
-			} else {
-				console.log('Registered successfully with payload:', authData);
-				User.create({
-					email: user.email,
-					accountCreated: Date.now(),
-					id: authData.uid
-				})
+	function register(user) {
+		$rootScope.authData.$createUser(user)
+			.then(function(res) {
+				console.log("Success");
+				console.log(res);
+				user.id = res.uid;
+				user.accountCreated = Date.now();
+				user.password = null;
+				users.$add(user)
 					.then(function(res) {
-						console.log('success', res);
-						$state.go('dashboard');
-					})
-					.catch(function(res) {
-						console.log('err', res);
+						console.log("User added to table");
+						console.log(res);
+					}).catch(function(res) {
+						console.log("User not added to table");
+						console.log(res);
+						$state.go("dashboard");
 					});
-			}
-		});
-		};
-
-		vm.authMember = function() {
-		var authData = DSFirebaseAdapter.ref.getAuth();
-		if (authData) $rootScope.authData = authData;
-		};
+			})
+			.catch(function(res) {
+				console.log("Error on Registration");
+				console.log(res);
+			});
+	}
 
 }

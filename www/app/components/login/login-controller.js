@@ -5,12 +5,12 @@ angular
 
 function LoginController($rootScope, $scope, $state, AuthService) {
 	var vm = this;
-	this.login = AuthService.login;
-
-	this.register = AuthService.register;
+	vm.login = AuthService.login;
+	vm.register = AuthService.register;
 
 	if ($rootScope.authData) {
-		$state.go('dashboard');
+		// $state.go('dashboard');
+		AuthService.logout();
 	}
 
 }
