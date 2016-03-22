@@ -125,7 +125,6 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 		console.log(classroom);
 		// If there's any students, remove the classroom from their list as well
 		if (classroom.students.length) {
-			debugger;
 			// loop through students
 			for (var i = 0; i < Object.keys(classroom.students).length; i++) {
 				console.log(Object.keys(classroom.students));
@@ -133,6 +132,7 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 				removeClassFromUser(current, classroom);
 			}
 		}
+		removeClassFromUser(myself, classroom);
 		// removeClassFromUser(classroom.instructorId, classroom);
 		classrooms.$remove(classroom)
 			.then(function(x) {
@@ -160,24 +160,12 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 
 	// Removes classroom reference from user
 	function removeClassFromUser(userToTarget, classToRemove) {
-		var user = null;
-		if (classToRemove.instructorId === userToTarget) return;
-		for (var i = 0; i < $scope.users.length; i++) {
-			if ($scope.users[i].id === userToTarget) {
-				user = $scope.users[i];
+		for (var i = 0; i < userToTarget.classes.length; i++) {
+			if (userToTarget.classes[i] === classToRemove.$id) {
+				userToTarget.classes[i] = null;
 			}
 		}
-		// Take off the stupid '/' on the id
-		var myClass = classToRemove.id.split('');
-		myClass.shift();
-		myClass = myClass.join('');
-		// Remove class from local scope
-		user.classroom.destroy(myClass);
-		user.classrooms[myClass] = null;
-		// Update the DS
-		// User.update(user.id, user)
-		// Push through adapter
-		User.save(user.id);
+		users.$save(userToTarget);
 	}
 
 	// Remove user reference from classroom
