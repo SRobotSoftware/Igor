@@ -49,17 +49,15 @@ function AuthService($rootScope, $state, $firebaseAuth, users) {
 		$rootScope.authData.$createUser(user)
 			.then(function(res) {
 				console.log("Success");
-				console.log(res);
 				user.id = res.uid;
 				user.accountCreated = Date.now();
 				user.password = null;
 				users.$add(user)
 					.then(function(res) {
-						console.log("User added to table");
-						console.log(res);
-						$state.go("dashboard");
+						console.log("User added to registration table");
+						alert("Thanks for registering! Please re-enter your password to log in...");
 					}).catch(function(res) {
-						console.log("User not added to table");
+						console.log("User not added to registration table");
 						console.log(res);
 					});
 			})
