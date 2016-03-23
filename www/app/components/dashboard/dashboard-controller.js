@@ -1,5 +1,5 @@
 angular
-	.module('Disco')
+	.module('Igor')
 	.controller('DashboardController', DashboardController);
 
 function DashboardController($rootScope, $scope, $state, AuthService, users, classrooms) {
