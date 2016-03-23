@@ -23,11 +23,45 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 	vm.moveTopic = moveTopic;
 	vm.pullFromQueue = pullFromQueue;
 	vm.responseCount = responseCount;
+	vm.askQuestion = askQuestion;
+	vm.addMentor = addMentor;
 
 	// Load data
 	load();
 
 	// Functions
+
+	// Add a mentor
+	function addMentor(mentor) {
+		if (!$scope.myRoom.mentors) $scope.myRoom.mentors = {};
+		var out;
+		users.forEach(function(element) {
+			if (element.id === mentor) {
+				out = element;
+			}
+		});
+		out = out || { email: "TESTMENTOR", id: 0 };
+		console.log(out);
+		if (!out.id) return alert("Don't be a dummy");
+		$scope.myRoom.mentors[out.id] = out;
+		classrooms.$save($scope.myRoom);
+	}
+
+	// Ask a question
+	function askQuestion(question) {
+		if (!$scope.myRoom.questions) $scope.myRoom.questions = {};
+		var position = Object.keys($scope.myRoom.questions).length + 1;
+		console.log(position);
+		var out = {
+			body: question,
+			author: myself.email,
+			time: Date.now(),
+			position: position
+		};
+		console.log(out);
+		$scope.myRoom.questions[myself.id] = out;
+		classrooms.$save($scope.myRoom);
+	}
 
 	// Load data
 	function load() {
@@ -37,9 +71,11 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 			return;
 		}
 		users.$loaded().then(function(x) {
+			$scope.users = users;
 			users.forEach(function(element) {
 				if (element.id === auth.uid) {
 					myself = element;
+					$scope.me = myself.id;
 					console.log("User Found");
 					classrooms.$loaded()
 						.then(function(x) {
@@ -87,7 +123,10 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 
 	// Move all items from queue to track
 	function pullFromQueue() {
-		$scope.myTopics.forEach(function(topic) {
+		var myArr = $scope.myTopics.sort(function(a, b) {
+			return a.lastModified - b.lastModified;
+		});
+		myArr.forEach(function(topic) {
 			if (!topic.track) {
 				topic.track = true;
 				topic.lastModified = Date.now();
@@ -99,7 +138,10 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 
 	// Move all itesm from track to queue
 	function pullfromTrack() {
-		$scope.myTopics.forEach(function(topic) {
+		var myArr = $scope.myTopics.sort(function(a, b) {
+			return a.lastModified - b.lastModified;
+		});
+		myArr.forEach(function(topic) {
 			if (topic.track) {
 				topic.track = false;
 				topic.lastModified = Date.now();

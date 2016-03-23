@@ -70,6 +70,45 @@
 					</div>
 				</div>
 			</div>
+			<!--Call for Help-->
+			<div ng-if="isStudent" class="panel panel-default">
+				<div class="panel-heading">
+					Call for Help!
+				</div>
+				<div class="panel-body">
+					<div class="well text-center">
+						<div ng-if="!myRoom.questions[me]">
+							<form ng-submit="cc.askQuestion(newQuestion)" class="form-inline">
+								<input class="form-control" type="text" ng-model="newQuestion" placeholder="Ask a question!">
+								<button type="submit" class="btn btn-info">Ask!</button>
+							</form>
+						</div>
+						<div ng-if="myRoom.questions[me]">
+							Your question has been submitted, you are number: {{myRoom.questions[me].position}} in queue!
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--Call for Help Add Mentor-->
+			<div ng-if="!isStudent" class="panel panel-default">
+				<div class="panel-heading">
+					Mentor List
+				</div>
+				<div class="panel-body text-center">
+					<form ng-submit="cc.addMentor(newMentor)" class="form-inline">
+						<select class="form-control" name="repeatSelect" id="repeatSelect" ng-model="newMentor">
+							<option value="">---Please Select---</option>
+							<option ng-repeat="option in users" value="{{option.id}}">{{option.email}}</option>
+						</select>
+						<button class="btn btn-success" type="submit">Add</button>
+					</form>
+					<ul class="list-group">
+						<li class="list-group-item" ng-repeat="mentor in myRoom.mentors">
+							Email: {{mentor.email}}
+						</li>
+					</ul>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
