@@ -14,13 +14,13 @@
 	<!--CONTENT-->
 	<div class="panel panel-default" ng-show="loaded && joined">
 		<div class="panel-heading">
-			{{myRoom.name}} <span ng-if="!isStudent">- isLecturing: {{myRoom.isLecturing}}</span>
+			{{myRoom.name}}
 			<button class="btn btn-info btn-xs pull-right" ui-sref="dashboard">Back to Dashboard</button>
 		</div>
 		<div class="panel-body">
 			<div class="panel panel-default">
 				<div class="panel-body">
-					{{myRoom.description}} ||| {{myRoom}}
+					{{myRoom.description}}
 				</div>
 			</div>
 			<!--Topic Track-->
@@ -35,8 +35,9 @@
 						</div>
 						<button type="submit" class="btn btn-success">Add</button>
 					</form>
-					<button class="btn btn-danger pull-right" ng-click="cc.stopLecture()">End Lecture</button>
-					<button class="btn btn-success pull-right" ng-click="cc.startLecture()">Start Lecture</button>
+						<button class="btn btn-danger pull-right" ng-click="cc.stopLecture()">End Lecture</button>
+						<button class="btn pull-right" ng-class="{'btn-success': myRoom.isLecturing, 'btn-danger': !myRoom.isLecturing}">Session: <span ng-if="myRoom.isLecturing">STARTED</span><span ng-if="!myRoom.isLecturing">STOPPED</span></button>
+						<button class="btn btn-success pull-right" ng-click="cc.startLecture()">Start Lecture</button>
 				</div>
 				<div class="panel-body" ng-show="!myRoom.topics || !myRoom.isLecturing && isStudent">
 					No Topics Currently Loaded <span ng-show="!myRoom.isLecturing">- Session has not started yet</span>
