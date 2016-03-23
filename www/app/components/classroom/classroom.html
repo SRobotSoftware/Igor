@@ -89,6 +89,26 @@
 					</div>
 				</div>
 			</div>
+			<!--Call for Help Add Mentor-->
+			<div ng-if="!isStudent" class="panel panel-default">
+				<div class="panel-heading">
+					Mentor List
+				</div>
+				<div class="panel-body text-center">
+					<form ng-submit="cc.addMentor(newMentor)" class="form-inline">
+						<select class="form-control" name="repeatSelect" id="repeatSelect" ng-model="newMentor">
+							<option value="">---Please Select---</option>
+							<option ng-repeat="option in users" value="{{option.id}}">{{option.email}}</option>
+						</select>
+						<button class="btn btn-success" type="submit">Add</button>
+					</form>
+					<ul class="list-group">
+						<li class="list-group-item" ng-repeat="mentor in myRoom.mentors">
+							Email: {{mentor.email}}
+						</li>
+					</ul>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

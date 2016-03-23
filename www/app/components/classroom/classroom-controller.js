@@ -24,11 +24,28 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 	vm.pullFromQueue = pullFromQueue;
 	vm.responseCount = responseCount;
 	vm.askQuestion = askQuestion;
+	vm.addMentor = addMentor;
 
 	// Load data
 	load();
 
 	// Functions
+
+	// Add a mentor
+	function addMentor(mentor) {
+		if (!$scope.myRoom.mentors) $scope.myRoom.mentors = {};
+		var out;
+		users.forEach(function(element) {
+			if (element.id === mentor) {
+				out = element;
+			}
+		});
+		out = out || { email: "TESTMENTOR", id: 0 };
+		console.log(out);
+		if (!out.id) return alert("Don't be a dummy");
+		$scope.myRoom.mentors[out.id] = out;
+		classrooms.$save($scope.myRoom);
+	}
 
 	// Ask a question
 	function askQuestion(question) {
@@ -54,6 +71,7 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 			return;
 		}
 		users.$loaded().then(function(x) {
+			$scope.users = users;
 			users.forEach(function(element) {
 				if (element.id === auth.uid) {
 					myself = element;
