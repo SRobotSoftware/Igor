@@ -2,25 +2,15 @@ angular
 	.module('Disco')
 	.controller('DashboardController', DashboardController);
 
-function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, model, AuthService) {
+function DashboardController($rootScope, $scope, $state, AuthService, users, classrooms) {
 
-	var User = model.user;
-	var Classroom = model.classroom;
-	var myAuth;
-	if ($rootScope.authData) {
-		myAuth = $rootScope.authData.uid;
-	} else {
-		$state.go('login');
-	}
+	// Local Vars
+	var auth = $rootScope.authData.$getAuth();
 	var vm = this;
+	var myself;
 
-	vm.classrooms = findClassrooms(myAuth);
-
-	User.findAll();
-	User.bindAll({}, $scope, 'users');
-
+	// Scoped Vars
 	vm.createClassroom = createClassroom;
-	vm.joinClassroom = joinClassroom;
 	vm.removeClassroom = removeClassroom;
 	vm.removeClassroom = removeClassroom;
 	vm.leaveClassroom = leaveClassroom;
@@ -28,27 +18,62 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 	vm.isInstructor = isInstructor;
 	vm.displayLink = displayLink;
 
+	// Load data
+	load();
+
+	// Functions
+
+	// Load data
+	function load() {
+		if (!auth) {
+			console.log("Auth failed, please log in.");
+			$state.go("login");
+			return;
+		}
+		users.$loaded().then(function(x) {
+			users.forEach(function(element) {
+				if (element.id === auth.uid) {
+					myself = element;
+					console.log("User Found");
+					classrooms.$loaded()
+						.then(function(x) {
+							findClassrooms();
+							console.log("Classrooms Found");
+						})
+						.catch(function(x) {
+							console.log("Classrooms not found");
+							console.log(x);
+						});
+				}
+			}, this);
+			if (!myself) console.log("User not found");
+		});
+	}
+
 	// Displays a link with the proper URL for a given classroom
 	function displayLink(room) {
-		var out = 'http://localhost:8080/#/dashboard' + room.id;
+		var out = 'http://giskard.us/#/dashboard/' + room.$id;
 		return out;
 	}
 
 	// Checks if user is the instructor for a given classroom
 	function isInstructor(classroom) {
-		return classroom.instructorId === myAuth;
+		return classroom.instructorId === myself.id;
 	}
 
 	// Finds all Classrooms the user participates in
-	function findClassrooms(user) {
+	function findClassrooms() {
 		var result = [];
-		User.find(user).then(function(thisUser) {
-			for (var classroom in thisUser.classrooms) {
-				Classroom.find(classroom).then(function(res) { result.push(res); });
+		classrooms.forEach(function(element) {
+			if (!element.students) element.students = [];
+			if (element.instructorId === myself.id) {
+				result.push(element);
+			} else {
+				if (element.students[myself.id]) result.push(element);
 			}
-		});
+		}, this);
+		$scope.classrooms = result;
 		$scope.loaded = true;
-		return result;
 	}
 
 	// Create Classroom
@@ -56,111 +81,80 @@ function DashboardController($rootScope, $scope, $state, DSFirebaseAdapter, mode
 		if (!newClassroom) {
 			newClassroom = {};
 		}
-		newClassroom.name = newClassroom.name || convertUser(myAuth) + '\'s Classroom';
+		newClassroom.name = newClassroom.name || myself.email + '\'s Classroom';
 		newClassroom.description = newClassroom.description || 'A fun place to learn!';
-		Classroom.create({
-			instructorId: $rootScope.authData.uid,
+		classrooms.$add({
+			instructorId: myself.id,
 			name: newClassroom.name,
-			description: newClassroom.description
+			description: newClassroom.description,
+			isLecturing: false
 		})
 			.then(function(res) {
-				User.find(myAuth).then(function(res2) {
-					var user = res2;
-					var myClass = res.id.split('');
-					myClass.shift();
-					myClass = myClass.join('');
-					user.classrooms = user.classrooms || {};
-					user.classrooms[myClass] = myClass;
-					User.update(myAuth, user);
-					vm.classrooms = findClassrooms(myAuth);
-				});
+				console.log("Added class successfully");
+				console.log(res.path.u[1]);
+				if (myself.classes) {
+					myself.classes[res.path.u[1]] = res.path.u[1];
+				} else {
+					myself.classes = {};
+					myself.classes[res.path.u[1]] = res.path.u[1];
+				}
+				users.$save(myself);
+				findClassrooms();
+			})
+			.catch(function(res) {
+				console.log("Error adding class");
+				console.log(res);
 			});
-	}
-
-	// Join classroom
-	function joinClassroom(classroom) {
-		if (classroom.instructorId === myAuth) {
-			return;
-		}
-		classroom.students = classroom.students || {};
-		classroom.students[myAuth] = myAuth;
-		Classroom.update(classroom.id, classroom).then(function(res) {
-			var myClass = res.id.split('');
-			myClass.shift();
-			myClass = myClass.join('');
-			User.find(myAuth).then(function(res2) {
-				var user = res2;
-				user.classrooms = user.classrooms || {};
-				user.classrooms[myClass] = myClass;
-				User.update(myAuth, user);
-			});
-		});
 	}
 
 	// Destroy classroom
 	function removeClassroom(classroom) {
-		console.log(classroom);
 		// If there's any students, remove the classroom from their list as well
 		if (classroom.students) {
-			// loop through students
-			for (var i = 0; i < Object.keys(classroom.students).length; i++) {
-				console.log(Object.keys(classroom.students));
-				var current = Object.keys(classroom.students)[i];
-				removeClassFromUser(current, classroom);
+			// FIX FOR OBJECT
+			var myKeys = Object.keys(classroom.students);
+			for (var student in myKeys) {
+				removeClassFromUser(myKeys[student], classroom);
 			}
+			removeClassFromUser(classroom.instructorId, classroom);
+			classrooms.$remove(classroom)
+				.then(function(x) {
+					findClassrooms();
+				});
 		}
-		removeClassFromUser(classroom.instructorId, classroom);
-		Classroom.destroy(classroom.id);
-		vm.classrooms = findClassrooms(myAuth);
 	}
 
 	// Remove classroom from list
 	function leaveClassroom(classroom) {
-		removeUserFromClass(classroom, myAuth);
-		removeClassFromUser(myAuth, classroom);
-		vm.classrooms = findClassrooms(myAuth);
+		removeUserFromClass(classroom, myself);
+		removeClassFromUser(myself, classroom);
+		findClassrooms(myself);
 	}
 
 	// Convert uid to Name or Email or err
 	function convertUser(user) {
-		for (var i = 0; i < $scope.users.length; i++) {
-			if ($scope.users[i].id === user) {
-				return $scope.users[i].name || $scope.users[i].email;
+		users.forEach(function(element) {
+			if (element.id === user) {
+				result = element.name || element.email;
 			}
-		}
+		}, this);
+		if (result) return result;
 		return 'Name not Found';
 	}
 
 	// Removes classroom reference from user
 	function removeClassFromUser(userToTarget, classToRemove) {
-		var user = null;
-		if (classToRemove.instructorId === userToTarget) return;
-		for (var i = 0; i < $scope.users.length; i++) {
-			if ($scope.users[i].id === userToTarget) {
-				user = $scope.users[i];
-			}
-		}
-		// Take off the stupid '/' on the id
-		var myClass = classToRemove.id.split('');
-		myClass.shift();
-		myClass = myClass.join('');
-		// Remove class from local scope
-		user.classrooms[myClass] = null;
-		// Update the DS
-		// User.update(user.id, user)
-		// Push through adapter
-		User.save(user.id);
+		var myUser;
+		users.forEach(function(element) {
+			if (element.id === userToTarget) myUser = element;
+		}, this);
+		myUser.classes[classToRemove.$id] = null;
+		users.$save(myUser);
 	}
 
 	// Remove user reference from classroom
 	function removeUserFromClass(classToTarget, userToRemove) {
-		for (var i = 0; i < vm.classrooms.length; i++) {
-			if (vm.classrooms[i] === classToTarget) {
-				if (vm.classrooms[i].students) {
-					vm.classrooms[i].students[userToRemove] = null;
-				}
-			}
-		}
-		Classroom.save(classToTarget);
+		classToTarget.students[userToRemove.id] = null;
+		classrooms.$save(classToTarget);
 	}
 }

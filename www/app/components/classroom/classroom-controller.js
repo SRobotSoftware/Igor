@@ -2,167 +2,158 @@ angular
 	.module('Disco')
 	.controller('ClassroomController', ClassroomController);
 
-function ClassroomController($rootScope, $scope, $stateParams, model) {
+function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $state, users, classrooms) {
 
-	// THIS CONTROLLER NEEDS A HUGE REWRITE
-	// CREATE SCOPE VARIABLES FOR DISPLAY INFORMATION
-	// THINGS LIKE TOTAL NUMBER OF STUDENTS
-	// A MANIPULATABLE LOCAL TOPIC ARRAY
-	// TOTALS AND INDICATORS FOR TOPIC RESPONSES
-
-	var User = model.user;
-	var Classroom = model.classroom;
-		var myAuth;
-	if ($rootScope.authData) {
-		myAuth = $rootScope.authData.uid;
-	} else {
-		$state.go('login');
-	}
-	var classId = $stateParams.classroomId;
+	// Local Vars
 	var vm = this;
-	var myResponse = null;
-	$scope.joined = false;
+	var auth = $rootScope.authData.$getAuth();
+	var classId = $stateParams.classroomId;
+	var myself;
 
-	Classroom.find(classId).then(load);
-
-	function load(room) {
-		vm.isStudent = true;
-		vm.classroom = room;
-		User.find(myAuth).then(function() {
-			console.log(myAuth, room);
-			if (room.instructorId === myAuth) {
-				pullFromQueue();
-				vm.isStudent = false;
-				$scope.joined = true;
-			} else {
-				vm.isStudent = true;
-				if (!room.students) room.students = {};
-				if (room.students[myAuth]) $scope.joined = true;
-			}
-			$scope.loaded = true;
-			// $scope.$apply();
-		});
-	}
-
-
-	// setTimeout(function () {
-	// 	console.log($scope.user);
-	// 	console.log(vm.classroom);
-	// }, 500);
-
+	// Scoped Vars
+	$scope.myTopics = $firebaseArray(new Firebase("https://discoapp.firebaseio.com/classrooms/" + classId + "/topics"));
+	$scope.isStudent = true;
 	vm.addTopic = addTopic;
 	vm.removeTopic = removeTopic;
-	vm.queueTopic = queueTopic;
+	vm.moveTopic = moveTopic;
 	vm.startLecture = startLecture;
 	vm.stopLecture = stopLecture;
 	vm.respond = respond;
 	vm.getResponse = getResponse;
 	vm.joinClassroom = joinClassroom;
+	vm.moveTopic = moveTopic;
+	vm.pullFromQueue = pullFromQueue;
+	vm.responseCount = responseCount;
 
-	function addTopic(topic) {
-		if (!topic) {
-			topic = {};
-		}
-		topic.body = topic.body || 'TEST TOPIC BODY';
-		if (!vm.classroom.topicTrack) {
-			vm.classroom.topicTrack = [];
-		}
-		vm.classroom.topicTrack.push(topic);
-		Classroom.save($stateParams.classroomId);
-	}
+	// Load data
+	load();
 
-	function removeTopic(index) {
-		vm.classroom.topicTrack.splice(index, 1);
-		Classroom.save($stateParams.classroomId);
-	}
+	// Functions
 
-	function queueTopic(index) {
-		if (!vm.classroom.topicQueue) {
-			vm.classroom.topicQueue = [];
-		}
-		vm.classroom.topicQueue.push(vm.classroom.topicTrack[index]);
-		vm.classroom.topicTrack.splice(index, 1);
-		Classroom.save($stateParams.classroomId);
-	}
-
-	function pullFromQueue() {
-		if (!vm.classroom.topicQueue) {
-			return;
-		}
-		if (!vm.classroom.topicTrack) {
-			vm.classroom.topicTrack = [];
-		}
-		while (vm.classroom.topicQueue.length) {
-			vm.classroom.topicTrack.push(vm.classroom.topicQueue.shift());
-		}
-		Classroom.save($stateParams.classroomId);
-	}
-
-	function startLecture() {
-		vm.classroom.isLecturing = true;
-		Classroom.save($stateParams.classroomId);
-	}
-
-	function stopLecture() {
-		vm.classroom.isLecturing = false;
-		if (!vm.classroom.topicQueue) {
-			vm.classroom.topicQueue = [];
-		}
-		while (vm.classroom.topicTrack.length) {
-			vm.classroom.topicQueue.push(vm.classroom.topicTrack.shift());
-		}
-		Classroom.save($stateParams.classroomId);
-	}
-
-	function respond(i, response) {
-		myResponse = response;
-		if (!vm.classroom.topicTrack[i].response) {
-			vm.classroom.topicTrack[i].response = {};
-		}
-		vm.classroom.topicTrack[i].response[myAuth] = myResponse;
-		Classroom.save($stateParams.classroomId);
-	}
-
-	function getResponse(index, response) {
+	function responseCount(topic, response) {
 		var out = 0;
-		for (var key in vm.classroom.topicTrack[index].response) {
-			if (vm.classroom.topicTrack[index].response[key] === response) {
-				out++;
+		if (!response) {
+			if (topic.responses) out = Object.keys(topic.responses).length;
+		} else {
+			for (var res in topic.responses) {
+				if (topic.responses[res] === response) out++;
 			}
 		}
 		return out;
 	}
 
+	// Load data
+	function load() {
+		if (!auth) {
+			console.log("Auth failed, please log in.");
+			$state.go("login");
+			return;
+		}
+		users.$loaded().then(function(x) {
+			users.forEach(function(element) {
+				if (element.id === auth.uid) {
+					myself = element;
+					console.log("User Found");
+					classrooms.$loaded()
+						.then(function(x) {
+							classrooms.forEach(function(element) {
+								if (element.$id === classId) {
+									$scope.myRoom = element;
+									console.log("Classroom Found");
+									if (!myself.classes) myself.classes = {};
+									if (myself.classes[classId]) {
+										console.log("User is part of class");
+										$scope.joined = true;
+									}
+									$scope.loaded = true;
+									if (myself.id === $scope.myRoom.instructorId) $scope.isStudent = false;
+								}
+							}, this);
+						});
+				}
+			}, this);
+			if (!myself) console.log("User not found");
+		});
+	}
+
+	// move topic from queue to track or track to queue
+	function moveTopic(topic) {
+		var myTopic = $scope.myTopics.$indexFor(topic);
+		$scope.myTopics[myTopic].track = !$scope.myTopics[myTopic].track;
+		$scope.myTopics.$save(myTopic);
+	}
+
+	// Add topic to track
+	function addTopic(topic) {
+		if (!topic) topic = {};
+		topic.body = topic.body || 'EXAMPLE TOPIC BODY';
+		topic.track = true;
+		$scope.myTopics.$add(topic);
+	}
+
+	// Removes topic from db
+	function removeTopic(topic) {
+		$scope.myTopics.$remove($scope.myTopics.$indexFor(topic));
+	}
+
+	// Move all items from queue to track
+	function pullFromQueue() {
+		for (var topic in $scope.myTopics) {
+			$scope.myTopics[topic].track = true;
+			$scope.myTopics.$save($scope.myTopics[topic]);
+		}
+		classrooms.$save($scope.myRoom);
+	}
+
+	// Move all itesm from track to queue
+	function pullfromTrack() {
+		for (var topic in $scope.myTopics) {
+			$scope.myTopics[topic].track = false;
+			$scope.myTopics.$save($scope.myTopics[topic]);
+		}
+	}
+
+	// Start lecture
+	function startLecture() {
+		$scope.myRoom.isLecturing = true;
+		classrooms.$save($scope.myRoom);
+	}
+
+	// Stop lecture, move topics from track to queue
+	function stopLecture() {
+		pullfromTrack();
+		$scope.myRoom.isLecturing = false;
+		classrooms.$save($scope.myRoom);
+	}
+
+	// Add student response to db
+	function respond(i, response) {
+		if (!i.responses) i.responses = {};
+		i.responses[myself.id] = response;
+		$scope.myTopics.$save(i);
+	}
+
+	// Sum student responses from db
+	function getResponse(index, response) {
+		var out = 0;
+
+		return out;
+	}
+
+	// Join classroom
 	function joinClassroom(classroom) {
-		if (classroom.instructorId === myAuth) return;
-		classroom.students = classroom.students || {};
-		if (classroom.students[myAuth]) return;
-		classroom.students[myAuth] = myAuth;
-		Classroom.update(classroom.id, classroom).then(function(res) {
-			var myClass = res.id.split('');
-			myClass.shift();
-			myClass = myClass.join('');
-			User.find(myAuth).then(function(res2) {
-				var user = res2;
-				user.classrooms = user.classrooms || {};
-				user.classrooms[myClass] = myClass;
-				User.update(myAuth, user)
-					.then(function(res) {
-						console.log('suc', res);
-					})
-					.catch(function(res) {
-						console.log('err', res);
-					});
-				console.log('success', res);
-			})
-				.catch(function(res) {
-					console.log('err', res);
-				});
-		})
-			.catch(function(res) {
-				console.log('err', res);
-			});
+		if (classroom.instructorId === myself.id) {
+			return;
+		}
+		console.log("joining classroom");
+		if (!myself.classes) myself.classes = {};
+		myself.classes[classId] = classId;
+		if (!classroom.students) classroom.students = {};
+		classroom.students[myself.id] = myself.id;
+		users.$save(myself);
+		classrooms.$save(classroom);
 		$scope.joined = true;
+		$state.reload();
 	}
 
 }
