@@ -2,9 +2,14 @@ angular
 	.module('Disco')
 	.controller('AuthController', AuthController);
 
-function AuthController($rootScope, $scope, AuthService) {
+function AuthController($rootScope, $scope, $state, AuthService) {
 	var vm = this;
 	vm.logout = AuthService.logout;
+	// Not needed at the moment.
+	// if (!$rootScope.authData.uid) {
+	// 	console.log("Please log in");
+	// 	$state.go('login');
+	// }
 }
 
 angular
@@ -52,10 +57,10 @@ function AuthService($rootScope, $state, $firebaseAuth, users) {
 					.then(function(res) {
 						console.log("User added to table");
 						console.log(res);
+						$state.go("dashboard");
 					}).catch(function(res) {
 						console.log("User not added to table");
 						console.log(res);
-						$state.go("dashboard");
 					});
 			})
 			.catch(function(res) {
