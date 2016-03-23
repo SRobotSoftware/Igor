@@ -23,11 +23,24 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 	vm.joinClassroom = joinClassroom;
 	vm.moveTopic = moveTopic;
 	vm.pullFromQueue = pullFromQueue;
+	vm.responseCount = responseCount;
 
 	// Load data
 	load();
 
 	// Functions
+
+	function responseCount(topic, response) {
+		var out = 0;
+		if (!response) {
+			if (topic.responses) out = Object.keys(topic.responses).length;
+		} else {
+			for (var res in topic.responses) {
+				if (topic.responses[res] === response) out++;
+			}
+		}
+		return out;
+	}
 
 	// Load data
 	function load() {
@@ -85,10 +98,19 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 
 	// Move all items from queue to track
 	function pullFromQueue() {
-		$scope.myTopics.forEach(function(element) {
-			element.track = true;
-			$scope.myTopics.$save(element);
-		}, this);
+		for (var topic in $scope.myTopics) {
+			$scope.myTopics[topic].track = true;
+			$scope.myTopics.$save($scope.myTopics[topic]);
+		}
+		classrooms.$save($scope.myRoom);
+	}
+
+	// Move all itesm from track to queue
+	function pullfromTrack() {
+		for (var topic in $scope.myTopics) {
+			$scope.myTopics[topic].track = false;
+			$scope.myTopics.$save($scope.myTopics[topic]);
+		}
 	}
 
 	// Start lecture
@@ -99,18 +121,22 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 
 	// Stop lecture, move topics from track to queue
 	function stopLecture() {
+		pullfromTrack();
 		$scope.myRoom.isLecturing = false;
 		classrooms.$save($scope.myRoom);
-		pullFromQueue();
 	}
 
 	// Add student response to db
 	function respond(i, response) {
+		if (!i.responses) i.responses = {};
+		i.responses[myself.id] = response;
+		$scope.myTopics.$save(i);
 	}
 
 	// Sum student responses from db
 	function getResponse(index, response) {
 		var out = 0;
+
 		return out;
 	}
 

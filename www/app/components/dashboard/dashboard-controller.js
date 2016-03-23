@@ -110,19 +110,18 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 	// Destroy classroom
 	function removeClassroom(classroom) {
 		// If there's any students, remove the classroom from their list as well
-		if (classroom.students.length) {
-			debugger;
+		if (classroom.students) {
 			// FIX FOR OBJECT
-			classroom.students.forEach(function(student) {
-				removeClassFromUser(student, classroom);
-			}, this);
+			var myKeys = Object.keys(classroom.students);
+			for (var student in myKeys) {
+				removeClassFromUser(myKeys[student], classroom);
+			}
+			removeClassFromUser(classroom.instructorId, classroom);
+			classrooms.$remove(classroom)
+				.then(function(x) {
+					findClassrooms();
+				});
 		}
-		removeClassFromUser(myself, classroom);
-		// removeClassFromUser(classroom.instructorId, classroom);
-		classrooms.$remove(classroom)
-			.then(function(x) {
-				findClassrooms();
-			});
 	}
 
 	// Remove classroom from list
@@ -145,13 +144,16 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 
 	// Removes classroom reference from user
 	function removeClassFromUser(userToTarget, classToRemove) {
-		userToTarget.classes[classToRemove.$id] = null;
-		users.$save(userToTarget);
+		var myUser;
+		users.forEach(function(element) {
+			if (element.id === userToTarget) myUser = element;
+		}, this);
+		myUser.classes[classToRemove.$id] = null;
+		users.$save(myUser);
 	}
 
 	// Remove user reference from classroom
 	function removeUserFromClass(classToTarget, userToRemove) {
-		debugger;
 		classToTarget.students[userToRemove.id] = null;
 		classrooms.$save(classToTarget);
 	}
