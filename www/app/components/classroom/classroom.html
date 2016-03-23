@@ -42,7 +42,7 @@
 				<div class="panel-body" ng-show="!myRoom.topics || !myRoom.isLecturing && isStudent">
 					No Topics Currently Loaded <span ng-show="!myRoom.isLecturing">- Session has not started yet</span>
 				</div>
-				<div ng-show="!isStudent || myRoom.isLecturing" class="well well-sm" ng-repeat="topic in myTopics | filter:{track:true} track by $index">
+				<div ng-show="!isStudent || myRoom.isLecturing" class="well well-sm" ng-repeat="topic in myTopics | orderBy: 'lastModified' | filter:{track:true} track by $index">
 					{{topic.body}} <span ng-show="!isStudent" class="text-danger" ng-click="cc.removeTopic(topic.$id)">X</span>
 					<span ng-show="!isStudent"> - Total Res: {{cc.responseCount(topic)}}</span>
 					<button ng-show="isStudent" class="col-xs-2 btn btn-danger btn-xs pull-right" ng-click="cc.respond(topic, 'stop')"><i class="fa fa-inverse fa-ban"></i> Needs Explanation</button>
@@ -64,7 +64,7 @@
 					<button class="btn btn-success btn-xs pull-right" ng-click="cc.pullFromQueue()">Add All</button>
 				</div>
 				<div class="panel-body">
-					<div class="well well-sm" ng-repeat="topic in myTopics | filter:{track:false} track by $index">
+					<div class="well well-sm" ng-repeat="topic in myTopics | orderBy: 'lastModified' | filter:{track:false} track by $index">
 						{{topic.body}} - <span ng-show="!isStudent" class="text-danger" ng-click="cc.removeTopic(topic.$id)">X</span>
 						<button class="btn btn-success btn-xs" ng-click="cc.moveTopic(topic.$id)">Add to List</button>
 					</div>

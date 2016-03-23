@@ -19,7 +19,6 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 	vm.startLecture = startLecture;
 	vm.stopLecture = stopLecture;
 	vm.respond = respond;
-	vm.getResponse = getResponse;
 	vm.joinClassroom = joinClassroom;
 	vm.moveTopic = moveTopic;
 	vm.pullFromQueue = pullFromQueue;
@@ -29,18 +28,6 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 	load();
 
 	// Functions
-
-	function responseCount(topic, response) {
-		var out = 0;
-		if (!response) {
-			if (topic.responses) out = Object.keys(topic.responses).length;
-		} else {
-			for (var res in topic.responses) {
-				if (topic.responses[res] === response) out++;
-			}
-		}
-		return out;
-	}
 
 	// Load data
 	function load() {
@@ -80,6 +67,7 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 	function moveTopic(topic) {
 		var myTopic = $scope.myTopics.$indexFor(topic);
 		$scope.myTopics[myTopic].track = !$scope.myTopics[myTopic].track;
+		$scope.myTopics[myTopic].lastModified = Date.now();
 		$scope.myTopics.$save(myTopic);
 	}
 
@@ -88,6 +76,7 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 		if (!topic) topic = {};
 		topic.body = topic.body || 'EXAMPLE TOPIC BODY';
 		topic.track = true;
+		topic.lastModified = Date.now();
 		$scope.myTopics.$add(topic);
 	}
 
@@ -98,19 +87,26 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 
 	// Move all items from queue to track
 	function pullFromQueue() {
-		for (var topic in $scope.myTopics) {
-			$scope.myTopics[topic].track = true;
-			$scope.myTopics.$save($scope.myTopics[topic]);
-		}
+		$scope.myTopics.forEach(function(topic) {
+			if (!topic.track) {
+				topic.track = true;
+				topic.lastModified = Date.now();
+				$scope.myTopics.$save(topic);
+			}
+		}, this);
 		classrooms.$save($scope.myRoom);
 	}
 
 	// Move all itesm from track to queue
 	function pullfromTrack() {
-		for (var topic in $scope.myTopics) {
-			$scope.myTopics[topic].track = false;
-			$scope.myTopics.$save($scope.myTopics[topic]);
-		}
+		$scope.myTopics.forEach(function(topic) {
+			if (topic.track) {
+				topic.track = false;
+				topic.lastModified = Date.now();
+				$scope.myTopics.$save(topic);
+			}
+		}, this);
+		classrooms.$save($scope.myRoom);
 	}
 
 	// Start lecture
@@ -133,13 +129,6 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 		$scope.myTopics.$save(i);
 	}
 
-	// Sum student responses from db
-	function getResponse(index, response) {
-		var out = 0;
-
-		return out;
-	}
-
 	// Join classroom
 	function joinClassroom(classroom) {
 		if (classroom.instructorId === myself.id) {
@@ -154,6 +143,18 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 		classrooms.$save(classroom);
 		$scope.joined = true;
 		$state.reload();
+	}
+
+	function responseCount(topic, response) {
+		var out = 0;
+		if (!response) {
+			if (topic.responses) out = Object.keys(topic.responses).length;
+		} else {
+			for (var res in topic.responses) {
+				if (topic.responses[res] === response) out++;
+			}
+		}
+		return out;
 	}
 
 }
