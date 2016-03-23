@@ -1,5 +1,5 @@
 angular
-	.module('Disco', [
+	.module('Igor', [
 		'ui.router',
 		'firebase',
 	])
@@ -18,11 +18,11 @@ angular
 	.factory('classrooms', ["$firebaseArray", classrooms]);
 
 function users($firebaseArray) {
-	var ref = new Firebase("https://discoapp.firebaseio.com/users");
+	var ref = new Firebase("https://igorapp.firebaseio.com/users");
 	return $firebaseArray(ref);
 }
 
 function classrooms($firebaseArray) {
-	var ref = new Firebase("https://discoapp.firebaseio.com/classrooms");
+	var ref = new Firebase("https://igorapp.firebaseio.com/classrooms");
 	return $firebaseArray(ref);
 }

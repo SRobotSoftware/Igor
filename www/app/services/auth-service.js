@@ -1,5 +1,5 @@
 angular
-	.module('Disco')
+	.module('Igor')
 	.controller('AuthController', AuthController);
 
 function AuthController($rootScope, $scope, $state, AuthService) {
@@ -13,12 +13,12 @@ function AuthController($rootScope, $scope, $state, AuthService) {
 }
 
 angular
-	.module('Disco')
+	.module('Igor')
 	.service('AuthService', AuthService);
 
 function AuthService($rootScope, $state, $firebaseAuth, users) {
 	var vm = this;
-	var ref = new Firebase("https://discoapp.firebaseio.com");
+	var ref = new Firebase("https://igorapp.firebaseio.com");
 
 	vm.logout = logout;
 	vm.login = login;

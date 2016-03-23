@@ -1,6 +1,6 @@
 /* global Firebase */
 angular
-	.module('Disco')
+	.module('Igor')
 	.controller('LoginController', LoginController);
 
 function LoginController($rootScope, $scope, $state, AuthService) {

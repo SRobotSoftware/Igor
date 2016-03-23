@@ -1,5 +1,5 @@
 angular
-	.module('Disco')
+	.module('Igor')
 	.controller('ClassroomController', ClassroomController);
 
 function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $state, users, classrooms) {
@@ -11,7 +11,7 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 	var myself;
 
 	// Scoped Vars
-	$scope.myTopics = $firebaseArray(new Firebase("https://discoapp.firebaseio.com/classrooms/" + classId + "/topics"));
+	$scope.myTopics = $firebaseArray(new Firebase("https://igorapp.firebaseio.com/classrooms/" + classId + "/topics"));
 	$scope.isStudent = true;
 	vm.addTopic = addTopic;
 	vm.removeTopic = removeTopic;

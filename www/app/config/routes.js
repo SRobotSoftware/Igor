@@ -1,5 +1,5 @@
 angular
-	.module('Disco')
+	.module('Igor')
 	.config(function($stateProvider, $urlRouterProvider) {
 		$urlRouterProvider.otherwise('/login');
 
