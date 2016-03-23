@@ -70,6 +70,25 @@
 					</div>
 				</div>
 			</div>
+			<!--Call for Help-->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					Call for Help!
+				</div>
+				<div class="panel-body">
+					<div class="well text-center">
+						<div ng-if="!myRoom.questions[me]">
+							<form ng-submit="cc.askQuestion(newQuestion)" class="form-inline">
+								<input class="form-control" type="text" ng-model="newQuestion" placeholder="Ask a question!">
+								<button type="submit" class="btn btn-info">Ask!</button>
+							</form>
+						</div>
+						<div ng-if="myRoom.questions[me]">
+							Your question has been submitted, you are number: {{myRoom.questions[me].position}} in queue!
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

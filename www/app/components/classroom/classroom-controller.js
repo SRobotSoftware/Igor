@@ -23,11 +23,28 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 	vm.moveTopic = moveTopic;
 	vm.pullFromQueue = pullFromQueue;
 	vm.responseCount = responseCount;
+	vm.askQuestion = askQuestion;
 
 	// Load data
 	load();
 
 	// Functions
+
+	// Ask a question
+	function askQuestion(question) {
+		if (!$scope.myRoom.questions) $scope.myRoom.questions = {};
+		var position = Object.keys($scope.myRoom.questions).length + 1;
+		console.log(position);
+		var out = {
+			body: question,
+			author: myself.email,
+			time: Date.now(),
+			position: position
+		};
+		console.log(out);
+		$scope.myRoom.questions[myself.id] = out;
+		classrooms.$save($scope.myRoom);
+	}
 
 	// Load data
 	function load() {
@@ -40,6 +57,7 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 			users.forEach(function(element) {
 				if (element.id === auth.uid) {
 					myself = element;
+					$scope.me = myself.id;
 					console.log("User Found");
 					classrooms.$loaded()
 						.then(function(x) {
