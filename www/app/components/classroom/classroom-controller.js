@@ -105,7 +105,10 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 
 	// Move all items from queue to track
 	function pullFromQueue() {
-		$scope.myTopics.forEach(function(topic) {
+		var myArr = $scope.myTopics.sort(function(a, b) {
+			return a.lastModified - b.lastModified;
+		});
+		myArr.forEach(function(topic) {
 			if (!topic.track) {
 				topic.track = true;
 				topic.lastModified = Date.now();
@@ -117,7 +120,10 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 
 	// Move all itesm from track to queue
 	function pullfromTrack() {
-		$scope.myTopics.forEach(function(topic) {
+		var myArr = $scope.myTopics.sort(function(a, b) {
+			return a.lastModified - b.lastModified;
+		});
+		myArr.forEach(function(topic) {
 			if (topic.track) {
 				topic.track = false;
 				topic.lastModified = Date.now();
