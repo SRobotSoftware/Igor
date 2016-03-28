@@ -25,11 +25,22 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 	vm.responseCount = responseCount;
 	vm.askQuestion = askQuestion;
 	vm.addMentor = addMentor;
+	vm.queuePosition = queuePosition;
 
 	// Load data
 	load();
 
 	// Functions
+
+	// Check position in question Queue
+	function queuePosition(x) {
+		var list = $scope.myRoom.questions;
+		var sorted = Object.keys(list).sort(function(a, b) {
+			return list[a].time - list[b].time;
+		});
+		var position = sorted.indexOf(myself.id);
+		return position + 1;
+	}
 
 	// Add a mentor
 	function addMentor(mentor) {
@@ -50,13 +61,10 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 	// Ask a question
 	function askQuestion(question) {
 		if (!$scope.myRoom.questions) $scope.myRoom.questions = {};
-		var position = Object.keys($scope.myRoom.questions).length + 1;
-		console.log(position);
 		var out = {
 			body: question,
 			author: myself.email,
-			time: Date.now(),
-			position: position
+			time: Date.now()
 		};
 		console.log(out);
 		$scope.myRoom.questions[myself.id] = out;
@@ -70,6 +78,7 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 			$state.go("login");
 			return;
 		}
+		$scope.today = moment();
 		users.$loaded().then(function(x) {
 			$scope.users = users;
 			users.forEach(function(element) {
