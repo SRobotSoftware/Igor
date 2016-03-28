@@ -2,6 +2,7 @@ angular
 	.module('Igor', [
 		'ui.router',
 		'firebase',
+		'angularMoment'
 	])
 	.config(function() {
 

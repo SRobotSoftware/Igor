@@ -84,7 +84,13 @@
 							</form>
 						</div>
 						<div ng-if="myRoom.questions[me]">
-							Your question has been submitted, you are number: {{myRoom.questions[me].position}} in queue!
+							<p>
+								Your question: {{myRoom.questions[me].body}}
+							</p>
+							<p>
+								was submitted <span am-time-ago="{{myRoom.questions[me].time}}"></span>. Your position in queue is: {{cc.queuePosition(myRoom.questions[me])}}.
+							</p>
+
 						</div>
 					</div>
 				</div>
@@ -95,6 +101,9 @@
 					Mentor List
 				</div>
 				<div class="panel-body text-center">
+					<div class="panel text-success" ng-if="myRoom.questions">
+						You have questions in your queue, access Frankie to view them.
+					</div>
 					<form ng-submit="cc.addMentor(newMentor)" class="form-inline">
 						<select class="form-control" name="repeatSelect" id="repeatSelect" ng-model="newMentor">
 							<option value="">---Please Select---</option>
