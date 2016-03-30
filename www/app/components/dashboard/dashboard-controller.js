@@ -110,18 +110,17 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 	// Destroy classroom
 	function removeClassroom(classroom) {
 		// If there's any students, remove the classroom from their list as well
-		if (classroom.students) {
-			// FIX FOR OBJECT
-			var myKeys = Object.keys(classroom.students);
+		var myKeys = Object.keys(classroom.students);
+		if (myKeys.length) {
 			for (var student in myKeys) {
 				removeClassFromUser(myKeys[student], classroom);
 			}
-			removeClassFromUser(classroom.instructorId, classroom);
-			classrooms.$remove(classroom)
-				.then(function(x) {
-					findClassrooms();
-				});
 		}
+		removeClassFromUser(classroom.instructorId, classroom);
+		classrooms.$remove(classroom)
+			.then(function(x) {
+				findClassrooms();
+			});
 	}
 
 	// Remove classroom from list
