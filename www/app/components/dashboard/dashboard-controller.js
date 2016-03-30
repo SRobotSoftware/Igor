@@ -34,6 +34,7 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 			users.forEach(function(element) {
 				if (element.id === auth.uid) {
 					myself = element;
+					$scope.myName = myself.email;
 					console.log("User Found");
 					classrooms.$loaded()
 						.then(function(x) {
@@ -109,12 +110,13 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 
 	// Destroy classroom
 	function removeClassroom(classroom) {
-		// If there's any students, remove the classroom from their list as well
-		if (classroom.students) {
-			// FIX FOR OBJECT
+		if (confirm('Are you sure you want to delete this classroom?')) {
+			// If there's any students, remove the classroom from their list as well
 			var myKeys = Object.keys(classroom.students);
-			for (var student in myKeys) {
-				removeClassFromUser(myKeys[student], classroom);
+			if (myKeys.length > 0) {
+				for (var student in myKeys) {
+					removeClassFromUser(myKeys[student], classroom);
+				}
 			}
 			removeClassFromUser(classroom.instructorId, classroom);
 			classrooms.$remove(classroom)
