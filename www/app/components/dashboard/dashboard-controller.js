@@ -34,6 +34,7 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 			users.forEach(function(element) {
 				if (element.id === auth.uid) {
 					myself = element;
+					$scope.myName = myself.email;
 					console.log("User Found");
 					classrooms.$loaded()
 						.then(function(x) {
