@@ -111,7 +111,7 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 	function removeClassroom(classroom) {
 		// If there's any students, remove the classroom from their list as well
 		var myKeys = Object.keys(classroom.students);
-		if (myKeys.length) {
+		if (myKeys.length > 0) {
 			for (var student in myKeys) {
 				removeClassFromUser(myKeys[student], classroom);
 			}
