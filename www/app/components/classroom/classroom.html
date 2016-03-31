@@ -42,19 +42,33 @@
 				<div class="panel-body" ng-show="!myRoom.topics || !myRoom.isLecturing && isStudent">
 					No Topics Currently Loaded <span ng-show="!myRoom.isLecturing">- Session has not started yet</span>
 				</div>
+				<div ng-show="!isStudent" class="clearfix text-center well well-sm">
+					<div class="pull-right col-xs-1">Stop</div>
+					<div class="pull-right col-xs-1"></div>
+					<div class="pull-right col-xs-1">Slow</div>
+					<div class="pull-right col-xs-1"></div>
+					<div class="pull-right col-xs-1">Go</div>
+					<div class="pull-right col-xs-1"></div>
+					<div class="pull-right col-xs-1">Total Responses</div>
+				</div>
 				<div ng-show="!isStudent || myRoom.isLecturing" class="well well-sm" ng-repeat="topic in myTopics | orderBy: 'lastModified' | filter:{track:true} track by $index">
-					{{topic.body}} <span ng-show="!isStudent" class="text-danger" ng-click="cc.removeTopic(topic.$id)">X</span>
-					<span ng-show="!isStudent"> - Total Res: {{cc.responseCount(topic)}}</span>
+					<button ng-show="!isStudent" class="btn btn-xs btn-danger" ng-click="cc.removeTopic(topic.$id)" data-toggle="tooltip" data-placement="bottom"
+					title="Delete Topic"><i class="fa fa-close"></i></button>
+					{{topic.body}}
 					<button ng-show="isStudent" class="col-xs-2 btn btn-danger btn-xs pull-right" ng-click="cc.respond(topic, 'stop')"><i class="fa fa-inverse fa-ban"></i> Needs Explanation</button>
-					<div ng-show="!isStudent" class="col-xs-1 text-danger pull-right"> {{cc.responseCount(topic, 'stop')}} </div>
+					<div ng-show="!isStudent" class="col-xs-1 text-danger text-center pull-right"> {{cc.responseCount(topic, 'stop')}} </div>
 					<div class="col-xs-1 pull-right"></div>
 					<button ng-show="isStudent" class="col-xs-2 btn btn-warning btn-xs pull-right" ng-click="cc.respond(topic, 'slow')"><i class="fa fa-exclamation-triangle"></i> Needs Review</button>
-					<div ng-show="!isStudent" class="col-xs-1 text-warning pull-right"> {{cc.responseCount(topic, 'slow')}} </div>
+					<div ng-show="!isStudent" class="col-xs-1 text-warning text-center pull-right"> {{cc.responseCount(topic, 'slow')}} </div>
 					<div class="col-xs-1 pull-right"></div>
 					<button ng-show="isStudent" class="col-xs-2 btn btn-success btn-xs pull-right" ng-click="cc.respond(topic, 'go')"><i class="fa fa-arrow-circle-right"></i> Understood</button>
-					<div ng-show="!isStudent" class="col-xs-1 text-success pull-right"> {{cc.responseCount(topic, 'go')}} </div>
+					<div ng-show="!isStudent" class="col-xs-1 text-success text-center pull-right"> {{cc.responseCount(topic, 'go')}} </div>
 					<div ng-show="!isStudent" class="col-xs-1 col-xs-1 pull-right"></div>
-					<button ng-show="!isStudent" class="col-xs-1 btn btn-success btn-xs pull-right" ng-click="cc.moveTopic(topic.$id)"> Queue </button>
+					<span class="pull-right text-center col-xs-1" ng-show="!isStudent">{{cc.responseCount(topic)}}</span>
+					<div class="col-xs-1 pull-right">
+						<button ng-show="!isStudent" class="btn btn-success btn-xs" ng-click="cc.moveTopic(topic.$id)" data-toggle="tooltip" data-placement="bottom"
+						title="Add to Queue"><i class="fa fa-plus"></i></button>
+					</div>
 				</div>
 			</div>
 			<!--Topic Queue-->
@@ -113,7 +127,8 @@
 					</form>
 					<ul class="list-group">
 						<li class="list-group-item" ng-repeat="mentor in myRoom.mentors">
-							Email: {{mentor.email}} - <button ng-click="cc.removeMentor(mentor)" class="btn btn-xs btn-danger">Remove Mentor</button>
+							Email: {{mentor.email}} -
+							<button ng-click="cc.removeMentor(mentor)" class="btn btn-xs btn-danger">Remove Mentor</button>
 						</li>
 					</ul>
 				</div>
