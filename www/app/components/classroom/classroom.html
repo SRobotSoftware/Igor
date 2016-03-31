@@ -113,7 +113,7 @@
 					</form>
 					<ul class="list-group">
 						<li class="list-group-item" ng-repeat="mentor in myRoom.mentors">
-							Email: {{mentor.email}}
+							Email: {{mentor.email}} - <button ng-click="cc.removeMentor(mentor)" class="btn btn-xs btn-danger">Remove Mentor</button>
 						</li>
 					</ul>
 				</div>
