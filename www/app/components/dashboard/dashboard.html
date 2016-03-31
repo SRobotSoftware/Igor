@@ -42,6 +42,7 @@
 				<button class="btn btn-success" ui-sref="classroom({classroomId: room.$id})">Enter Classroom</button>
 				<button class="btn btn-danger" ng-if="!dc.isInstructor(room)" ng-click="dc.leaveClassroom(room)">Leave Classroom</button>
 				<button class="btn btn-warning" ng-if="dc.isInstructor(room)" ng-click="dc.removeClassroom(room)">Delete Classroom</button>
+				<button class="btn btn-success" ng-if="dc.isInstructor(room)" ui-sref="queue({classroomId: room.$id})">View Queue</button>
 			</div>
 			<div class="panel-heading">
 				Students:
