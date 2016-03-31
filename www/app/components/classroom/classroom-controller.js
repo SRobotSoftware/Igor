@@ -26,6 +26,7 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 	vm.askQuestion = askQuestion;
 	vm.addMentor = addMentor;
 	vm.queuePosition = queuePosition;
+	vm.removeMentor = removeMentor;
 
 	// Load data
 	load();
@@ -51,10 +52,16 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 				out = element;
 			}
 		});
-		out = out || { email: "TESTMENTOR", id: 0 };
+		out = out || {};
 		console.log(out);
-		if (!out.id) return alert("Don't be a dummy");
+		if (!out.id) return alert("Please select a Mentor");
 		$scope.myRoom.mentors[out.id] = out;
+		classrooms.$save($scope.myRoom);
+	}
+
+	// Remove Mentor
+	function removeMentor(mentor) {
+		$scope.myRoom.mentors[mentor.id] = null;
 		classrooms.$save($scope.myRoom);
 	}
 
