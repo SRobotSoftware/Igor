@@ -69,6 +69,7 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 		};
 		console.log(out);
 		$scope.myRoom.questions[myself.id] = out;
+		out.id = myself.id;
 		$scope.myRoom.questionsOld.push(out);
 		classrooms.$save($scope.myRoom);
 	}
