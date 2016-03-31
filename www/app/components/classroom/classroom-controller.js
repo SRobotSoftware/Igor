@@ -61,15 +61,15 @@ function ClassroomController($rootScope, $scope, $stateParams, $firebaseArray, $
 	// Ask a question
 	function askQuestion(question) {
 		if (!$scope.myRoom.questions) $scope.myRoom.questions = {};
-		if (!$scope.myRoom.questions.old) $scope.myRoom.questions.old = [];
+		if (!$scope.myRoom.questionsOld) $scope.myRoom.questionsOld = [];
 		var out = {
 			body: question,
 			author: myself.email,
-			time: Date.now()
+			time: Date.now(),
+			id: myself.id
 		};
-		console.log(out);
 		$scope.myRoom.questions[myself.id] = out;
-		$scope.myRoom.questions.old.push(out);
+		$scope.myRoom.questionsOld.push(out);
 		classrooms.$save($scope.myRoom);
 	}
 

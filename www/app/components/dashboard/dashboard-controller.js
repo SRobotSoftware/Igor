@@ -17,6 +17,7 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 	vm.convertUser = convertUser;
 	vm.isInstructor = isInstructor;
 	vm.displayLink = displayLink;
+	vm.isMentor = isMentor;
 
 	// Load data
 	load();
@@ -60,6 +61,15 @@ function DashboardController($rootScope, $scope, $state, AuthService, users, cla
 	// Checks if user is the instructor for a given classroom
 	function isInstructor(classroom) {
 		return classroom.instructorId === myself.id;
+	}
+
+	// Checks if the user is a mentor for a given classroom
+	function isMentor(classroom) {
+		var x = false;
+		for (var mentor in classroom.mentors) {
+			if (mentor === myself.id) x = true;
+		}
+		return x;
 	}
 
 	// Finds all Classrooms the user participates in

@@ -16,6 +16,12 @@ angular
 				controller: 'DashboardController',
 				controllerAs: 'dc'
 			})
+			.state('queue', {
+				url: '/queue/:classroomId',
+				templateUrl: 'app/components/queue/queue.html',
+				controller: 'QueueController',
+				controllerAs: 'qc'
+			})
 			.state('classroom', {
 				url: '/dashboard/:classroomId',
 				templateUrl: 'app/components/classroom/classroom.html',
