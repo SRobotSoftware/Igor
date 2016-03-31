@@ -75,6 +75,15 @@ function QueueController($rootScope, $scope, $stateParams, $firebaseArray, $stat
 									$scope.myRoom = element;
 									console.log("Classroom Found");
 									$scope.loaded = true;
+									var allowed = false;
+									for (var member in element.mentors) {
+										if (member === $scope.me) allowed = true;
+									}
+									if (element.instructorId === $scope.me) allowed = true;
+									if (!allowed) {
+										console.log("Sorry, you're not authorized to be here.");
+										$state.go("dashboard");
+									}
 								}
 							}, this);
 						});
