@@ -1,16 +1,17 @@
 /* global Firebase */
+'use strict'
+
 angular
-	.module('Igor')
-	.controller('LoginController', LoginController);
+  .module('Igor')
+  .controller('LoginController', LoginController)
 
 function LoginController($rootScope, $scope, $state, AuthService) {
-	var vm = this;
-	vm.login = AuthService.login;
-	vm.register = AuthService.register;
+  const vm = this
+  vm.login = AuthService.login
+  vm.register = AuthService.register
 
-	if ($rootScope.authData) {
-		// $state.go('dashboard');
-		AuthService.logout();
-	}
-
+  if ($rootScope.authData) {
+    // $state.go('dashboard');
+    AuthService.logout()
+  }
 }

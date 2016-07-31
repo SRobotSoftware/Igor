@@ -1,138 +1,138 @@
 <div class="container-fluid">
-	<!--Heading-->
-	<div class="container-fluid" ng-if="!loaded">
-		<p class="text-center">
-			<i class="fa fa-spin fa-cog fa-5x"></i>
-		</p>
-	</div>
-	<div class="panel panel-default" ng-show="loaded && !joined">
-		<div class="panel-heading">Join this classroom!</div>
-		<div class="panel-body">
-			<button class="btn btn-primary btn-xs" ng-click="cc.joinClassroom(myRoom)">JOIN CLASSROOM</button>
-		</div>
-	</div>
-	<!--CONTENT-->
-	<div class="panel panel-default" ng-show="loaded && joined">
-		<div class="panel-heading">
-			{{myRoom.name}}
-			<button class="btn btn-info btn-xs pull-right" ui-sref="dashboard">Back to Dashboard</button>
-		</div>
-		<div class="panel-body">
-			<div class="panel panel-default">
-				<div class="panel-body">
-					{{myRoom.description}}
-				</div>
-			</div>
-			<!--Topic Track-->
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					Topic List:
-				</div>
-				<div ng-show="!isStudent" class="panel-body">
-					<form class="form-inline" ng-submit="cc.addTopic(newTopic); newTopic={};">
-						<div class="form-group">
-							<input class="form-control" type="text" ng-model="newTopic.body" placeholder="New Topic">
-						</div>
-						<button type="submit" class="btn btn-success">Add</button>
-					</form>
-					<button class="btn btn-danger pull-right" ng-click="cc.stopLecture()">End Lecture</button>
-					<button class="btn pull-right" ng-class="{'btn-success': myRoom.isLecturing, 'btn-danger': !myRoom.isLecturing}">Session: <span ng-if="myRoom.isLecturing">STARTED</span><span ng-if="!myRoom.isLecturing">STOPPED</span></button>
-					<button class="btn btn-success pull-right" ng-click="cc.startLecture()">Start Lecture</button>
-				</div>
-				<div class="panel-body" ng-show="!myRoom.topics || !myRoom.isLecturing && isStudent">
-					No Topics Currently Loaded <span ng-show="!myRoom.isLecturing">- Session has not started yet</span>
-				</div>
-				<div ng-show="!isStudent" class="clearfix text-center well well-sm">
-					<div class="pull-right col-xs-1">Stop</div>
-					<div class="pull-right col-xs-1"></div>
-					<div class="pull-right col-xs-1">Slow</div>
-					<div class="pull-right col-xs-1"></div>
-					<div class="pull-right col-xs-1">Go</div>
-					<div class="pull-right col-xs-1"></div>
-					<div class="pull-right col-xs-1">Total Responses</div>
-				</div>
-				<div ng-show="!isStudent || myRoom.isLecturing" class="well well-sm" ng-repeat="topic in myTopics | orderBy: 'lastModified' | filter:{track:true} track by $index">
-					<button ng-show="!isStudent" class="btn btn-xs btn-danger" ng-click="cc.removeTopic(topic.$id)" data-toggle="tooltip" data-placement="bottom"
-					title="Delete Topic"><i class="fa fa-close"></i></button>
-					{{topic.body}}
-					<button ng-show="isStudent" class="col-xs-2 btn btn-danger btn-xs pull-right" ng-click="cc.respond(topic, 'stop')"><i class="fa fa-inverse fa-ban"></i> Needs Explanation</button>
-					<div ng-show="!isStudent" class="col-xs-1 text-danger text-center pull-right"> {{cc.responseCount(topic, 'stop')}} </div>
-					<div class="col-xs-1 pull-right"></div>
-					<button ng-show="isStudent" class="col-xs-2 btn btn-warning btn-xs pull-right" ng-click="cc.respond(topic, 'slow')"><i class="fa fa-exclamation-triangle"></i> Needs Review</button>
-					<div ng-show="!isStudent" class="col-xs-1 text-warning text-center pull-right"> {{cc.responseCount(topic, 'slow')}} </div>
-					<div class="col-xs-1 pull-right"></div>
-					<button ng-show="isStudent" class="col-xs-2 btn btn-success btn-xs pull-right" ng-click="cc.respond(topic, 'go')"><i class="fa fa-arrow-circle-right"></i> Understood</button>
-					<div ng-show="!isStudent" class="col-xs-1 text-success text-center pull-right"> {{cc.responseCount(topic, 'go')}} </div>
-					<div ng-show="!isStudent" class="col-xs-1 col-xs-1 pull-right"></div>
-					<span class="pull-right text-center col-xs-1" ng-show="!isStudent">{{cc.responseCount(topic)}}</span>
-					<div class="col-xs-1 pull-right">
-						<button ng-show="!isStudent" class="btn btn-success btn-xs" ng-click="cc.moveTopic(topic.$id)" data-toggle="tooltip" data-placement="bottom"
-						title="Add to Queue"><i class="fa fa-plus"></i></button>
-					</div>
-				</div>
-			</div>
-			<!--Topic Queue-->
-			<div class="panel panel-default" ng-show="!isStudent">
-				<div class="panel-heading">
-					Topic Queue:
-					<button class="btn btn-success btn-xs pull-right" ng-click="cc.pullFromQueue()">Add All</button>
-				</div>
-				<div class="panel-body">
-					<div class="well well-sm" ng-repeat="topic in myTopics | orderBy: 'lastModified' | filter:{track:false} track by $index">
-						{{topic.body}} - <span ng-show="!isStudent" class="text-danger" ng-click="cc.removeTopic(topic.$id)">X</span>
-						<button class="btn btn-success btn-xs" ng-click="cc.moveTopic(topic.$id)">Add to List</button>
-					</div>
-				</div>
-			</div>
-			<!--Call for Help-->
-			<div ng-if="isStudent" class="panel panel-default">
-				<div class="panel-heading">
-					Call for Help!
-				</div>
-				<div class="panel-body">
-					<div class="well text-center">
-						<div ng-if="!myRoom.questions[me]">
-							<form ng-submit="cc.askQuestion(newQuestion)" class="form-inline">
-								<input class="form-control" type="text" ng-model="newQuestion" placeholder="Ask a question!">
-								<button type="submit" class="btn btn-info">Ask!</button>
-							</form>
-						</div>
-						<div ng-if="myRoom.questions[me]">
-							<p>
-								Your question: {{myRoom.questions[me].body}}
-							</p>
-							<p>
-								was submitted <span am-time-ago="{{myRoom.questions[me].time}}"></span>. Your position in queue is: {{cc.queuePosition(myRoom.questions[me])}}.
-							</p>
+  <!--Heading-->
+  <div class="container-fluid" ng-if="!loaded">
+    <p class="text-center">
+      <i class="fa fa-spin fa-cog fa-5x"></i>
+    </p>
+  </div>
+  <div class="panel panel-default" ng-show="loaded && !joined">
+    <div class="panel-heading">Join this classroom!</div>
+    <div class="panel-body">
+      <button class="btn btn-primary btn-xs" ng-click="cc.joinClassroom(myRoom)">JOIN CLASSROOM</button>
+    </div>
+  </div>
+  <!--CONTENT-->
+  <div class="panel panel-default" ng-show="loaded && joined">
+    <div class="panel-heading">
+      {{myRoom.name}}
+      <button class="btn btn-info btn-xs pull-right" ui-sref="dashboard">Back to Dashboard</button>
+    </div>
+    <div class="panel-body">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          {{myRoom.description}}
+        </div>
+      </div>
+      <!--Topic Track-->
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Topic List:
+        </div>
+        <div ng-show="!isStudent" class="panel-body">
+          <form class="form-inline" ng-submit="cc.addTopic(newTopic); newTopic={};">
+            <div class="form-group">
+              <input class="form-control" type="text" ng-model="newTopic.body" placeholder="New Topic">
+            </div>
+            <button type="submit" class="btn btn-success">Add</button>
+          </form>
+          <button class="btn btn-danger pull-right" ng-click="cc.stopLecture()">End Lecture</button>
+          <button class="btn pull-right" ng-class="{'btn-success': myRoom.isLecturing, 'btn-danger': !myRoom.isLecturing}">Session: <span ng-if="myRoom.isLecturing">STARTED</span><span ng-if="!myRoom.isLecturing">STOPPED</span></button>
+          <button class="btn btn-success pull-right" ng-click="cc.startLecture()">Start Lecture</button>
+        </div>
+        <div class="panel-body" ng-show="!myRoom.topics || !myRoom.isLecturing && isStudent">
+          No Topics Currently Loaded <span ng-show="!myRoom.isLecturing">- Session has not started yet</span>
+        </div>
+        <div ng-show="!isStudent" class="clearfix text-center well well-sm">
+          <div class="pull-right col-xs-1">Stop</div>
+          <div class="pull-right col-xs-1"></div>
+          <div class="pull-right col-xs-1">Slow</div>
+          <div class="pull-right col-xs-1"></div>
+          <div class="pull-right col-xs-1">Go</div>
+          <div class="pull-right col-xs-1"></div>
+          <div class="pull-right col-xs-1">Total Responses</div>
+        </div>
+        <div ng-show="!isStudent || myRoom.isLecturing" class="well well-sm" ng-repeat="topic in myTopics | orderBy: 'lastModified' | filter:{track:true} track by $index">
+          <button ng-show="!isStudent" class="btn btn-xs btn-danger" ng-click="cc.removeTopic(topic.$id)" data-toggle="tooltip" data-placement="bottom"
+          title="Delete Topic"><i class="fa fa-close"></i></button>
+          {{topic.body}}
+          <button ng-show="isStudent" class="col-xs-2 btn btn-danger btn-xs pull-right" ng-click="cc.respond(topic, 'stop')"><i class="fa fa-inverse fa-ban"></i> Needs Explanation</button>
+          <div ng-show="!isStudent" class="col-xs-1 text-danger text-center pull-right"> {{cc.responseCount(topic, 'stop')}} </div>
+          <div class="col-xs-1 pull-right"></div>
+          <button ng-show="isStudent" class="col-xs-2 btn btn-warning btn-xs pull-right" ng-click="cc.respond(topic, 'slow')"><i class="fa fa-exclamation-triangle"></i> Needs Review</button>
+          <div ng-show="!isStudent" class="col-xs-1 text-warning text-center pull-right"> {{cc.responseCount(topic, 'slow')}} </div>
+          <div class="col-xs-1 pull-right"></div>
+          <button ng-show="isStudent" class="col-xs-2 btn btn-success btn-xs pull-right" ng-click="cc.respond(topic, 'go')"><i class="fa fa-arrow-circle-right"></i> Understood</button>
+          <div ng-show="!isStudent" class="col-xs-1 text-success text-center pull-right"> {{cc.responseCount(topic, 'go')}} </div>
+          <div ng-show="!isStudent" class="col-xs-1 col-xs-1 pull-right"></div>
+          <span class="pull-right text-center col-xs-1" ng-show="!isStudent">{{cc.responseCount(topic)}}</span>
+          <div class="col-xs-1 pull-right">
+            <button ng-show="!isStudent" class="btn btn-success btn-xs" ng-click="cc.moveTopic(topic.$id)" data-toggle="tooltip" data-placement="bottom"
+            title="Add to Queue"><i class="fa fa-plus"></i></button>
+          </div>
+        </div>
+      </div>
+      <!--Topic Queue-->
+      <div class="panel panel-default" ng-show="!isStudent">
+        <div class="panel-heading">
+          Topic Queue:
+          <button class="btn btn-success btn-xs pull-right" ng-click="cc.pullFromQueue()">Add All</button>
+        </div>
+        <div class="panel-body">
+          <div class="well well-sm" ng-repeat="topic in myTopics | orderBy: 'lastModified' | filter:{track:false} track by $index">
+            {{topic.body}} - <span ng-show="!isStudent" class="text-danger" ng-click="cc.removeTopic(topic.$id)">X</span>
+            <button class="btn btn-success btn-xs" ng-click="cc.moveTopic(topic.$id)">Add to List</button>
+          </div>
+        </div>
+      </div>
+      <!--Call for Help-->
+      <div ng-if="isStudent" class="panel panel-default">
+        <div class="panel-heading">
+          Call for Help!
+        </div>
+        <div class="panel-body">
+          <div class="well text-center">
+            <div ng-if="!myRoom.questions[me]">
+              <form ng-submit="cc.askQuestion(newQuestion)" class="form-inline">
+                <input class="form-control" type="text" ng-model="newQuestion" placeholder="Ask a question!">
+                <button type="submit" class="btn btn-info">Ask!</button>
+              </form>
+            </div>
+            <div ng-if="myRoom.questions[me]">
+              <p>
+                Your question: {{myRoom.questions[me].body}}
+              </p>
+              <p>
+                was submitted <span am-time-ago="{{myRoom.questions[me].time}}"></span>. Your position in queue is: {{cc.queuePosition(myRoom.questions[me])}}.
+              </p>
 
-						</div>
-					</div>
-				</div>
-			</div>
-			<!--Call for Help Add Mentor-->
-			<div ng-if="!isStudent" class="panel panel-default">
-				<div class="panel-heading">
-					Mentor List
-				</div>
-				<div class="panel-body text-center">
-					<div class="panel text-success" ng-if="myRoom.questions">
-						You have questions in your queue, access Frankie to view them.
-					</div>
-					<form ng-submit="cc.addMentor(newMentor)" class="form-inline">
-						<select class="form-control" name="repeatSelect" id="repeatSelect" ng-model="newMentor">
-							<option value="">---Please Select---</option>
-							<option ng-repeat="option in users" value="{{option.id}}">{{option.email}}</option>
-						</select>
-						<button class="btn btn-success" type="submit">Add</button>
-					</form>
-					<ul class="list-group">
-						<li class="list-group-item" ng-repeat="mentor in myRoom.mentors">
-							Email: {{mentor.email}} -
-							<button ng-click="cc.removeMentor(mentor)" class="btn btn-xs btn-danger">Remove Mentor</button>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</div>
-	</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--Call for Help Add Mentor-->
+      <div ng-if="!isStudent" class="panel panel-default">
+        <div class="panel-heading">
+          Mentor List
+        </div>
+        <div class="panel-body text-center">
+          <div class="panel text-success" ng-if="myRoom.questions">
+            You have questions in your queue, access Frankie to view them.
+          </div>
+          <form ng-submit="cc.addMentor(newMentor)" class="form-inline">
+            <select class="form-control" name="repeatSelect" id="repeatSelect" ng-model="newMentor">
+              <option value="">---Please Select---</option>
+              <option ng-repeat="option in users" value="{{option.id}}">{{option.email}}</option>
+            </select>
+            <button class="btn btn-success" type="submit">Add</button>
+          </form>
+          <ul class="list-group">
+            <li class="list-group-item" ng-repeat="mentor in myRoom.mentors">
+              Email: {{mentor.email}} -
+              <button ng-click="cc.removeMentor(mentor)" class="btn btn-xs btn-danger">Remove Mentor</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
