@@ -2,6 +2,30 @@
   "name": "igor",
   "version": "1.0.0",
   "description": "Igor, a helpful assistant",
+  "license": "MIT",
+  "author": {
+    "name": "Zachary Mixon",
+    "email": "zmixon@vynyl.com"
+  },
+  "eslintConfig": {
+    "extends": "vynyl/angular1",
+    "rules": {
+      "semi": ["error", "never"]
+    }
+  },
   "devDependencies": {
+    "browser-sync": "^2.13.0",
+    "eslint": "^3.2.0",
+    "eslint-config-vynyl": "^2.0.1",
+    "gulp": "^3.9.1",
+    "gulp-sass": "^2.3.2"
+  },
+  "dependencies": {
+    "angular": "^1.5.8",
+    "angular-moment": "^1.0.0-beta.6",
+    "angularfire": "^2.0.1",
+    "firebase": "^3.2.1",
+    "moment": "^2.14.1",
+    "ui-router": "^1.0.0-alpha.3"
   }
 }
