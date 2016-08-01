@@ -9,7 +9,7 @@ gulp.task('default', ['watch'], () => { })
 gulp.task('browserSync', () => {
   browserSync.init({
     server: {
-      baseDir: 'www',
+      baseDir: './',
     },
   })
 })
@@ -22,7 +22,7 @@ gulp.task('sass', () => {
 })
 
 gulp.task('watch', ['browserSync', 'sass'], () => {
-  gulp.watch('www/**/*.html', browserSync.reload())
-  gulp.watch('www/**/*.js', browserSync.reload())
+  gulp.watch('www/**/*.html', browserSync.reload)
+  gulp.watch('www/**/*.js', browserSync.reload)
   gulp.watch('www/scss/**/*.scss', ['sass'])
 })

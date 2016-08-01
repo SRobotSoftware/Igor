@@ -8,26 +8,18 @@ angular
     $stateProvider
       .state('login', {
         url: '/login',
-        templateUrl: 'app/components/login/login.html',
-        controller: 'LoginController',
-        controllerAs: 'lc',
+        template: '<login></login>',
       })
       .state('dashboard', {
         url: '/dashboard',
-        templateUrl: 'app/components/dashboard/dashboard.html',
-        controller: 'DashboardController',
-        controllerAs: 'dc',
+        template: '<dashboard></dashboard>',
       })
       .state('queue', {
-        url: '/queue/:classroomId',
-        templateUrl: 'app/components/queue/queue.html',
-        controller: 'QueueController',
-        controllerAs: 'qc',
+        url: '/queue/:groupId',
+        template: '<queue></queue>',
       })
-      .state('classroom', {
-        url: '/dashboard/:classroomId',
-        templateUrl: 'app/components/classroom/classroom.html',
-        controller: 'ClassroomController',
-        controllerAs: 'cc',
+      .state('group', {
+        url: '/dashboard/:groupId',
+        template: '<group></group>',
       })
   })

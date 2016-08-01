@@ -1,31 +1,19 @@
 'use strict'
 
+const firebaseConfig = {
+  apiKey: 'AIzaSyC2cVJYjFaVmgmoWOqE5HeLlmEz-lSKScc',
+  authDomain: 'igorassistant-a6c75.firebaseapp.com',
+  databaseURL: 'https://igorassistant-a6c75.firebaseio.com',
+  storageBucket: '',
+}
+firebase.initializeApp(firebaseConfig)
+
 angular
   .module('Igor', [
     'ui.router',
     'firebase',
     'angularMoment',
+    'ngMaterial',
   ])
-  .config(() => {
-
-  })
-  .run(() => {
-    // var ref = new Firebase(CONSTANTS.fbRef);
-    // ref.on("value", function(snapshot) {
-    // 	$scope.$apply(function() {
-    // 		$scope.data = snapshot.val();
-    // 	});
-    // });
-  })
-  .factory('users', ['$firebaseArray', users])
-  .factory('classrooms', ['$firebaseArray', classrooms])
-
-function users($firebaseArray) {
-  const ref = new Firebase('https://igorapp.firebaseio.com/users')
-  return $firebaseArray(ref)
-}
-
-function classrooms($firebaseArray) {
-  const ref = new Firebase('https://igorapp.firebaseio.com/classrooms')
-  return $firebaseArray(ref)
-}
+  .config(() => { })
+  .run(() => { })
