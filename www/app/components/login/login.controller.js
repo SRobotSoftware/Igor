@@ -4,7 +4,7 @@ angular
   .module('Igor')
   .controller('Login.Controller', loginController)
 
-function loginController($log, $state) {
+function loginController($log, $state, AuthService) {
   $log.debug('Login.Controller initialized')
   const vm = this
   vm.login = login
@@ -13,14 +13,17 @@ function loginController($log, $state) {
 
   function login() {
     $log.debug('login.controller:login')
-    $state.go('dashboard')
+    AuthService.login(vm.user)
+    // $state.go('dashboard')
   }
 
   function register() {
     $log.debug('login.controller:register')
+    AuthService.register(vm.user)
   }
 
   function forgot() {
     $log.debug('login.controller:forgot')
+    AuthService.forgot(vm.user)
   }
 }

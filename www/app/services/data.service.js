@@ -2,13 +2,19 @@
 
 angular
   .module('Igor')
-  .factory('Data.Service', DataService)
+  .factory('DataService', DataService)
 
 function DataService($firebaseObject, $log) {
+  $log.debug('DataService: Initialized')
   const vm = this
-  const ref = firebase.database().ref().child('data')
+  vm.getData = getData
+  let groups = null
+  const ref = firebase.database().ref().child('goups')
   const syncObject = $firebaseObject(ref)
-  syncObject.$bindTo(vm.data, 'data')
+  syncObject.$bindTo(groups, 'groups')
+  function getData() {
+    return groups
+  }
   return vm
 }
 

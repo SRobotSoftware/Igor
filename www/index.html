@@ -15,21 +15,7 @@
 <body ng-app="Igor" ng-cloak>
 
   <div layout="column" layout-fill>
-    <md-toolbar>
-      <div class="md-toolbar-tools">
-        <span>Igor</span>
-        <span flex></span>
-        <md-button ui-sref="dashboard">
-          Dashboard
-        </md-button>
-        <md-button>
-          Profile
-        </md-button>
-        <md-button ui-sref="login">
-          Log Out
-        </md-button>
-      </div>
-    </md-toolbar>
+    <navbar></navbar>
     <md-content layout-margin layout-padding>
       <ui-view></ui-view>
     </md-content>
@@ -53,6 +39,8 @@
   <script src="app/config/routes.js"></script>
   <script src="app/services/auth.service.js"></script>
   <script src="app/services/data.service.js"></script>
+  <script src="app/common/navbar/navbar.controller.js"></script>
+  <script src="app/common/navbar/navbar.directive.js"></script>
   <script src="app/components/login/login.controller.js"></script>
   <script src="app/components/login/login.directive.js"></script>
   <script src="app/components/dashboard/dashboard.controller.js"></script>
